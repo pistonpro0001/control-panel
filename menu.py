@@ -17,12 +17,12 @@ from weather import get_weather
 from get_email import fetch_latest_emails as get_emails
 import pyperclip
 
-THEME_FILE = "/home/pi/.controlpanel_theme" #this one
-CURRENT_BG = "#FFFFFF"
+THEME_FILE = "/home/pi/.controlpanel_theme"
 PLUGIN_DIR = "/home/pi/.controlpanel_plugins" 
 RSS_FEED = "/home/pi/.controlpanel_rssfeed"
 SEARCH_HISTORY_FILE = "/home/pi/.controlpanel_search_history"
 FAVORITES_FILE = "/home/pi/.controlpanel_favorites.json"
+CURRENT_BG = "#FFFFFF"
 os.makedirs(PLUGIN_DIR, exist_ok=True)
 
 # -------------------------------
