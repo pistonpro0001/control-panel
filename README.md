@@ -59,6 +59,28 @@ Now, go to the location you set for `THEME_FILE` and create a file named exactly
 
 Open it in a text editor, and put either `light` or `dark`.
 
+### Email Setup
+If you want to be able to read your emails through the panel, here's how to do it:
+
+First, open up get_email.py.\
+Near the very top, you'll see a section like\
+`with open('/home/pi/pass.json, 'r') as f:`
+
+Edit the `/home/pi/` to be your home directory.\
+Save, then exit.
+
+Go to your home directory, and create a file named pass.json.\
+Open it, and put the following:
+
+`
+{
+"mail":"your_email@gmail.com",
+"app_pas":"your_app_password"
+}
+`
+
+If you don't have an app password, click [here.](https://support.google.com/mail/answer/185833?hl=en)
+
 Save and close it.
 ## Final Notes
 With the setup complete, the Control Panel is ready to become _your_ system dashboard. Everything—from themes to plugins to file handling—is designed to be edited, extended, and experimented with.
