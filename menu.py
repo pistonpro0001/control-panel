@@ -17,9 +17,10 @@ from weather import get_weather
 from get_email import fetch_latest_emails as get_emails
 import pyperclip
 
-THEME_FILE = "/home/pi/.controlpanel_theme"
+THEME_FILE = "/home/pi/.controlpanel_theme" #this one
 CURRENT_BG = "#FFFFFF"
-PLUGIN_DIR = "/home/pi/.controlpanel_plugins"
+PLUGIN_DIR = "/home/pi/.controlpanel_plugins" 
+RSS_FEED = "/home/pi/.controlpanel_rssfeed"
 SEARCH_HISTORY_FILE = "/home/pi/.controlpanel_search_history"
 FAVORITES_FILE = "/home/pi/.controlpanel_favorites.json"
 os.makedirs(PLUGIN_DIR, exist_ok=True)
@@ -435,16 +436,17 @@ ttk.Label(settings, text="Standard Refresh Rate (seconds)").pack(pady=(20, 0))
 ttk.Spinbox(settings, from_=1, to=60, textvariable=dash_interval).pack()
 
 def save_feed_url(*args):
-    with open("/home/pi/.controlpanel_rssfeed", "w") as f:
+    with open(RSS_FEED, "w") as f:
         f.write(feed_url.get())
         
 feed_url = tk.StringVar()
 fe = "http://planetpython.org/rss20.xml"
 try:
-    with open("/home/pi/.controlpanel_rssfeed", "r") as f:
+    with open(RSS_FEED, "r") as f:
         fe = f.readlines()[0].strip()
 except:
-    pass
+    with open(RSS_FEED, "w") as f:
+        f.write(fe)
     
 feed_url.set(fe)
 feed_url.trace_add("write", save_feed_url)
