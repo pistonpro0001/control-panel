@@ -532,12 +532,12 @@ def create_new_item(base_path, is_folder, callback=None):
     
 def new_plugin():
     def write_template(filepath):
-        template = """#Tutorial:
+        template = f"""#Tutorial:
 #Import ttk
 from tkinter import ttk
 
 #Just in case you want to change with the theme:
-THEME_FILE = "/home/pi/.controlpanel_theme"
+THEME_FILE = "{HOME_DIR}.controlpanel_theme"
 bg = None
 def load_theme():
     global bg
@@ -589,7 +589,7 @@ def register(api):
         
         refresh_plugins()
         
-    create_new_item("/home/pi/.controlpanel_plugins", False, callback=write_template)
+    create_new_item(HOME_DIR + ".controlpanel_plugins", False, callback=write_template)
     
 def refresh_plugins_panel():
     for child in plugins_tab.winfo_children():
