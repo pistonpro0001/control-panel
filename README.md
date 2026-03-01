@@ -51,3 +51,7 @@ With the setup complete, the Control Panel is ready to become _your_ system dash
 v1 is just the foundation. More features, polish, and customization options will come as the project grows. If you build something cool or find a way to improve the experience, contributions are always welcome.
 
 Although this is just v1, I have actually been working on this project for about 6 months now. There is just a lot to explore, so I hope you have fun with it!
+
+### Screenshots
+![Menu, opened to main dashboard](icons/screenshot1.png)
+![Menu, opened to file explorer](icons/screenshot2.png)
