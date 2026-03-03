@@ -10,7 +10,6 @@ import json
 from PIL import Image, ImageTk
 import shutil
 import psutil
-from mutagen import File
 import io
 import pyperclip
 
@@ -18,7 +17,6 @@ HOME_DIR = os.path.dirname(os.path.abspath(__file__)) + "/"
 print(HOME_DIR)
 THEME_FILE = HOME_DIR + ".controlpanel_theme"
 PLUGIN_DIR = HOME_DIR + ".controlpanel_plugins" 
-RSS_FEED = HOME_DIR + ".controlpanel_rssfeed"
 SEARCH_HISTORY_FILE = HOME_DIR + ".controlpanel_search_history"
 FAVORITES_FILE = HOME_DIR + ".controlpanel_favorites.json"
 CURRENT_BG = "#FFFFFF"
@@ -434,24 +432,6 @@ fuzzy_toggle.pack(pady=10)
 ttk.Label(settings, text="Standard Refresh Rate (seconds)").pack(pady=(20, 0))
 ttk.Spinbox(settings, from_=1, to=60, textvariable=dash_interval).pack()
 
-def save_feed_url(*args):
-    with open(RSS_FEED, "w") as f:
-        f.write(feed_url.get())
-        
-feed_url = tk.StringVar()
-fe = "http://planetpython.org/rss20.xml"
-try:
-    with open(RSS_FEED, "r") as f:
-        fe = f.readlines()[0].strip()
-except:
-    with open(RSS_FEED, "w") as f:
-        f.write(fe)
-    
-feed_url.set(fe)
-feed_url.trace_add("write", save_feed_url)
-ttk.Label(settings, text="News Feed RSS").pack(pady=(20, 0))
-ttk.Entry(settings, textvariable=feed_url).pack()
-
 def run_async(func, *args, **kwargs):
     threading.Thread(target=lambda: func(*args, **kwargs), daemon=True).start()
     
@@ -702,7 +682,6 @@ def show_preview(path):
             # Pretty JSON
             if ext == ".json":
                 try:
-                    import json
                     obj = json.loads(text)
                     text = json.dumps(obj, indent=2)
                 except:
