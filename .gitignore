@@ -1,1 +1,4 @@
 .controlpanel*
+.ven*
+__pycache_*
+*.pyc

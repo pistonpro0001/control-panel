@@ -10,13 +10,12 @@ import json
 from PIL import Image, ImageTk
 import shutil
 import psutil
-import io
 import pyperclip
 
 HOME_DIR = os.path.dirname(os.path.abspath(__file__)) + "/"
 print(HOME_DIR)
 THEME_FILE = HOME_DIR + ".controlpanel_theme"
-PLUGIN_DIR = HOME_DIR + ".controlpanel_plugins" 
+PLUGIN_DIR = HOME_DIR + ".controlpanel_plugins"
 SEARCH_HISTORY_FILE = HOME_DIR + ".controlpanel_search_history"
 FAVORITES_FILE = HOME_DIR + ".controlpanel_favorites.json"
 CURRENT_BG = "#FFFFFF"
@@ -25,11 +24,13 @@ os.makedirs(PLUGIN_DIR, exist_ok=True)
 # -------------------------------
 #  Toggle Switch Widget
 # -------------------------------
-class ToggleSwitch(tk.Canvas):
-    def __init__(self, parent, width=60, height=30, bg_on="#4CAF50", bg_off="#888888",
-                 circle_color="#FFFFFF", command=None, initial=False):
-        global CURRENT_BG
 
+class ToggleSwitch(tk.Canvas):
+    
+    def __init__(self, parent, width=60, height=30, bg_on="#4CAF50",\
+                 bg_off="#888888",
+                 circle_color="#FFFFFF", command=None, initial=False):
+        
         super().__init__(parent, width=width, height=height, highlightthickness=0,
                          bg=CURRENT_BG)
 
