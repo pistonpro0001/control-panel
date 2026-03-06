@@ -12,6 +12,8 @@ import shutil
 import psutil
 import pyperclip
 
+# Global path variables
+
 HOME_DIR = os.path.dirname(os.path.abspath(__file__)) + "/"
 print(HOME_DIR)
 THEME_FILE = HOME_DIR + ".controlpanel_theme"
@@ -295,24 +297,23 @@ def add_section(parent, title):
     )
     label.pack(anchor="w", padx=10)
 
-    # Separator line
     sep = tk.Frame(parent, bg=fg, height=1)
     sep.pack(fill="x", padx=10, pady=(0, 10))
     
 def build_tasks_panel():
     global task_list_frame
 
-    # Destroy anything that might already be in the Tasks tab
     for child in tabs["Tasks"].winfo_children():
         child.destroy()
 
-    # Now create a clean container
     task_list_frame = tk.Frame(tabs["Tasks"], bg=CURRENT_BG)
     task_list_frame.pack(fill="both", expand=True, padx=10, pady=10)
     
 build_tasks_panel()
-    
+
 panel = PanelContext(root, notebook, tabs)
+
+# Keyboard Shortcuts
     
 # Ctrl+S → jump to Search tab
 root.bind("<Control-s>", lambda e: notebook.select(tabs["Search"]))
@@ -326,6 +327,8 @@ root.bind("<Control-f>", lambda e: (
     path_var.set(PLUGIN_DIR),
     refresh_files()
 ))
+
+# Refresh and tab changes
     
 def on_tab_change(event):
     tab = event.widget.tab(event.widget.index("current"))["text"]
@@ -341,6 +344,10 @@ def refresh_tab_backgrounds():
         
 tasks_tab = tabs["Tasks"]
 
+# -------------------------------
+#  Tasks Tab
+# -------------------------------
+
 def refresh_tasks_panel():
     for child in task_list_frame.winfo_children():
         child.destroy()
@@ -351,7 +358,6 @@ def refresh_tasks_panel():
                       bg=CURRENT_BG, fg=fg, font=("TkDefaultFont", 10, "bold"))
     header.pack(anchor="w", pady=(0, 5))
 
-    # --- Collect processes first ---
     processes = []
     for proc in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent']):
         try:
@@ -359,10 +365,8 @@ def refresh_tasks_panel():
         except Exception:
             continue
 
-    # --- Sort by CPU descending ---
     processes.sort(key=lambda p: p['cpu_percent'], reverse=True)
 
-    # --- Render rows ---
     for info in processes:
         pid = info['pid']
         name = info['name']
@@ -390,6 +394,10 @@ def refresh_tasks_panel():
 
 build_tasks_panel()
 refresh_tasks_panel()
+
+# -------------------------------
+#  Settings Tab
+# -------------------------------
 
 settings = tabs["Settings"]
 
@@ -436,6 +444,9 @@ ttk.Spinbox(settings, from_=1, to=60, textvariable=dash_interval).pack()
 def run_async(func, *args, **kwargs):
     threading.Thread(target=lambda: func(*args, **kwargs), daemon=True).start()
     
+# -------------------------------
+#  Plugins
+# -------------------------------
     
 plugins_tab = tabs["Plugins"]
 
@@ -451,7 +462,7 @@ def refresh_plugins():
     # Clear widget registry
     PLUGIN_API["add_widget"] = []
 
-    # Remove ONLY plugin widgets
+    # Remove plugin widgets
     for tab_name in tabs:
         for child in tabs[tab_name].winfo_children():
             if getattr(child, "plugin_owned", False):
@@ -482,6 +493,8 @@ def refresh_plugins():
     show_popup("Plugins Reloaded", "All plugins have been refreshed.")
     
     
+# Creating a new file/folder
+    
 def create_new_item(base_path, is_folder, callback=None):
     popup = tk.Toplevel(root)
     popup.title("Create")
@@ -511,8 +524,12 @@ def create_new_item(base_path, is_folder, callback=None):
 
     ttk.Button(popup, text="OK", command=do_create).pack(pady=10)
     
+# Making a plugin
+    
 def new_plugin():
     def write_template(filepath):
+        
+        # Example plugin template
         template = f"""#Tutorial:
 #Import ttk
 from tkinter import ttk
@@ -572,6 +589,10 @@ def register(api):
         
     create_new_item(HOME_DIR + ".controlpanel_plugins", False, callback=write_template)
     
+# -------------------------------
+#  Plugins Tab
+# -------------------------------
+    
 def refresh_plugins_panel():
     for child in plugins_tab.winfo_children():
         child.destroy()
@@ -615,9 +636,14 @@ def refresh_plugins_panel():
 
 refresh_plugins_panel()
 
+# -------------------------------
+#  File Tab
+# -------------------------------
+
 file_frame = tk.Frame(tabs["Files"], bg=CURRENT_BG)
 file_frame.pack(fill="both", expand=True)
 
+# Frame to show files
 left_frame = tk.Frame(file_frame, bg=CURRENT_BG)
 left_frame.pack(side="left", fill="both", expand=True)
 
@@ -625,6 +651,7 @@ path_var = tk.StringVar(value=os.path.expanduser("~"))
 
 show_hidden = tk.BooleanVar(value=False)
 
+# Frame to show preview of selected file
 preview_frame = tk.Frame(file_frame, bg=CURRENT_BG)
 preview_frame.pack(side="right", fill="both")
 
@@ -700,6 +727,7 @@ def show_preview(path):
     tk.Label(preview_frame, text="No preview available",
              bg=CURRENT_BG, fg=fg).pack(pady=20)
 
+# Renaming
 def rename_file(old_path):
     popup = tk.Toplevel(root)
     popup.title("Rename")
@@ -727,6 +755,7 @@ def rename_file(old_path):
 file_context_menu = None
 context_target_path = None
 
+# Opening; this is what you need thonny, xdg-open, and mousepad for
 def open_file(p):
     ext = os.path.splitext(p)[1].lower()
 
@@ -753,6 +782,7 @@ def open_file(p):
     # Everything else → default handler
     subprocess.Popen(["xdg-open", p])
 
+# Clipboard (for the file cut/paste)
 FILE_CLIPBOARD = {"mode": None, "path": None}
 
 def copy_file(path):
@@ -784,6 +814,8 @@ def paste_file():
     FILE_CLIPBOARD["mode"] = None
     FILE_CLIPBOARD["path"] = None
     refresh_files()
+    
+# File right-click menu
 
 def show_file_menu(event, path, is_exec):
     menu = tk.Menu(root, tearoff=0,
@@ -857,7 +889,7 @@ TEXT_EXTS = {
     ".yaml", ".yml", ".xml", ".toml", ".rst"
 }
 
-
+# File tab UI
 def refresh_files(search_query=None):
     for child in left_frame.winfo_children():
         child.destroy()
@@ -1034,8 +1066,13 @@ def refresh_files(search_query=None):
 
 refresh_files()
 
+# -------------------------------
+#  Dashboard
+# -------------------------------
+
 dash = tabs["Dashboard"]
 
+# Draw dashboard UI
 def update_dashboard():
     for child in dash.winfo_children():
         child.destroy()
@@ -1106,8 +1143,9 @@ def update_dashboard():
 update_dashboard()
 
 # -------------------------------
-#  Command Definitions
+#  Favorites
 # -------------------------------
+
 items = []
 favorites = []
 
@@ -1136,6 +1174,10 @@ def save_favorites():
         print("Error saving favorites:", e)
         
 load_favorites()
+
+# -------------------------------
+#  Normal Buttons
+# -------------------------------
 
 def add_script_item(tab_name, label, path):
     items.append({
@@ -1178,7 +1220,8 @@ PLUGIN_API = {
     "add_script": add_script_item_plugin,
     "add_widget": []   # list of (tab_name, widget_func)
 }
- 
+
+# Load the plugin
 def load_plugins():
     for fname in os.listdir(PLUGIN_DIR):
         if fname.endswith(".py"):
@@ -1194,19 +1237,6 @@ def load_plugins():
                     f"Plugin Load Error: {module_name}",
                     f"Plugin failed during register:\n{e}"
                 )
-        
-"""
-To register, put this in code:
-# ~/.controlpanel_plugins/myplugin.py
-
-def register(api):
-    do some tk stuff here
-
-    widget = the tk widget to add
-    api["add_inline"]("Tab name", widget)
-    
-Choose add_inline or add_script
-"""
 
 def get_storage_usage():
     try:
@@ -1218,6 +1248,10 @@ def get_storage_usage():
         return f"{used} used / {size} total ({percent})"
     except Exception as e:
         return f"Error: {e}"
+
+# -------------------------------
+#  Button Tabs
+# -------------------------------
 
 add_section(tabs["Scheduler"], "Schedule Events")
 add_section(tabs["Search"], "System Search")
@@ -1258,12 +1292,19 @@ add_inline_item("Visual", "Open Terminal", "lxterminal", kind="action")
 add_inline_item("Visual", "Restart Panel", "lxpanelctl restart", kind="action")
 add_inline_item("Visual", "Restart Openbox", "openbox --restart", kind="action")
 
-# --- Clipboard ---
+
+# -------------------------------
+#  Clipboard (normal copy/paste)
+# -------------------------------
+
 clipboard_tab = tabs["Clipboard"]
 
 history = []
 last = None
 
+# Can only get the very last item copied at startup,
+# but however long the panel is opened it saves
+# everything copied.
 def update_clipboard():
     global last, history
     for child in clipboard_tab.winfo_children():
@@ -1293,9 +1334,9 @@ def update_clipboard():
     
 update_clipboard()
 
-# ============================
-# COMMAND PALETTE DICTIONARY
-# ============================
+# -------------------------------
+#  Command Pallete Commands
+# -------------------------------
 
 COMMANDS = []
 
@@ -1379,9 +1420,9 @@ def register_builtin_commands():
 
 register_builtin_commands()
 
-# ============================
-# COMMAND PALETTE POPUP
-# ============================
+# -------------------------------
+#  Command Pallete UI
+# -------------------------------
 
 def open_command_palette():
     palette = tk.Toplevel(root)
@@ -1463,7 +1504,7 @@ def open_command_palette():
     render_results()
     
 
-# Ctrl+Space → open command palette
+# Ctrl+P → open command palette
 root.bind("<Control-p>", lambda e: open_command_palette())
 
 def switch_tab(offset):
@@ -1476,7 +1517,7 @@ root.bind("<Control-Tab>", lambda e: switch_tab(1))
 root.bind("<Control-Shift-Tab>", lambda e: switch_tab(-1))
 
 # -------------------------------
-#  Render Buttons Into Tabs
+#  Button Renders
 # -------------------------------
 
 def add_button_to_tab(tab_name, label, callback):
@@ -1542,6 +1583,7 @@ def add_button_to_tab(tab_name, label, callback):
     if tab_name != "Favorites":
         btn.bind("<Button-3>", show_fav_menu)
 
+# Refresh favorites tab
 def refresh_favorites():
     tab = tabs["Favorites"]
     for child in tab.winfo_children():
@@ -1576,7 +1618,7 @@ def refresh_favorites():
 refresh_favorites()
 
 # -------------------------------
-#  PLUGIN WIDGET SUPPORT
+#  Plugin Widget Injection
 # -------------------------------
 def add_widget_to_tab(tab_widget, widget_func):
     widget = widget_func(tab_widget)
@@ -1594,14 +1636,9 @@ def inject_plugin_widgets():
         if widget is not None:
             widget.plugin_owned = True
 
-
-# -------------------------------
-#  STARTUP ORDER (IMPORTANT)
-# -------------------------------
-# 1. Load plugins (register items + widget funcs)
 run_async(load_plugins)
 
-# 2. Build ONLY built-in buttons
+# Build built-in buttons
 for item in items:
     if not item.get("plugin", False):
         if item["type"] == "script":
@@ -1617,13 +1654,14 @@ for item in items:
                 lambda it=item: run_inline_with_popup(it["name"], it["command"], it["kind"])
             )
 
-# 3. Inject plugin widgets ONCE at startup
+# Make plugin widgets
 PLUGINS_READY = True
 inject_plugin_widgets()
 
 # -------------------------------
 #  Scheduler
 # -------------------------------
+
 scheduled_tasks = []
 scheduler_running = True
 
@@ -1643,12 +1681,12 @@ def scheduler_loop():
 
 threading.Thread(target=scheduler_loop, daemon=True).start()
 
-# --- Scheduler UI ---
+# UI
 sched_frame = tabs["Scheduler"]
 
 ttk.Label(sched_frame, text="Schedule a Command").pack(pady=10)
 
-# Dropdown of commands
+# Commands dropdown
 command_names = [it["name"] for it in items]
 command_var = tk.StringVar()
 command_dropdown = ttk.Combobox(sched_frame, textvariable=command_var,
@@ -1690,6 +1728,7 @@ def refresh_task_list():
 
         ttk.Button(row, text="Cancel", command=cancel_task).pack(side="right")
 
+# Schedule
 def schedule_task():
     name = command_var.get()
     time_str = time_var.get().strip()
@@ -1717,20 +1756,24 @@ ttk.Button(sched_frame, text="Schedule", command=schedule_task).pack(pady=10)
 
 
 # -------------------------------
-#  Search Upgrades
+#  Search Tab
 # -------------------------------
+
 search_frame = tabs["Search"]
 
 search_label = ttk.Label(search_frame, text="Search commands")
 search_label.pack(pady=(20, 5))
 
+# Search variable
 search_var = tk.StringVar()
 search_entry = ttk.Entry(search_frame, textvariable=search_var)
 search_entry.pack(fill="x", padx=20, pady=(0, 10))
 
+# Results
 results_container = tk.Frame(search_frame, bg=CURRENT_BG)
 results_container.pack(fill="both", expand=True, padx=10, pady=10)
 
+#History
 search_history = []
 MAX_HISTORY = 5
 
@@ -1762,10 +1805,7 @@ def highlight(text, query):
     return text[:start] + "**" + text[start:end] + "**" + text[end:]
 
 
-# -------------------------------
-#  Search Logic
-# -------------------------------
-
+# --- Logic ---
 def do_search(*args):
     query = search_var.get().strip().lower()
     clear_search_results()
@@ -1773,7 +1813,7 @@ def do_search(*args):
     fg = "#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000"
     results_container.configure(bg=CURRENT_BG)
 
-    # Show history when empty
+    # Show history when no current search
     if not query:
         if search_history:
             hist_label = tk.Label(results_container, text="Recent Searches:",
@@ -1845,10 +1885,7 @@ def do_search(*args):
             )
         })
 
-    # -----------------------------
-    # FUZZY MATCH
-    # -----------------------------
-    
+    # Fuzzy yay
     names = [
         s.get("name", {}).get("name") if isinstance(s.get("name"), dict) 
         else s.get("name", "Unknown") 
@@ -1862,7 +1899,7 @@ def do_search(*args):
 
     if not matches:
         lbl = tk.Label(results_container,
-                       text="No matches.\nTry: files, plugins, commands, tabs",
+                       text="No matches.\nTry to search for files, plugins, commands, tabs",
                        bg=CURRENT_BG, fg=fg)
         lbl.pack(pady=10)
         return
@@ -1878,16 +1915,12 @@ def do_search(*args):
     matched_items = [item for item in matched_items if item is not None]
 
 
-    # -----------------------------
-    # GROUP BY TAB
-    # -----------------------------
+    # Group them
     grouped = {}
     for it in matched_items:
         grouped.setdefault(it["tab"], []).append(it)
 
-    # -----------------------------
-    # RENDER RESULTS
-    # -----------------------------
+    # Rendering
     for tab_name, group in grouped.items():
         header = tk.Label(results_container, text=tab_name,
                           bg=CURRENT_BG, fg=fg, font=("TkDefaultFont", 10, "bold"))
@@ -1945,43 +1978,9 @@ def do_search(*args):
 
             ttk.Button(outer, text=display, command=run_and_record).pack(fill="x")
 
-# -------------------------------
-#  Keyboard Navigation
-# -------------------------------
-selected_index = -1
-search_results_flat = []
-
-def update_flat_results():
-    global search_results_flat
-    search_results_flat = [child for child in results_container.winfo_children()
-                           if isinstance(child, tk.Frame)]
-
-def move_selection(delta):
-    global selected_index
-    update_flat_results()
-
-    if not search_results_flat:
-        return
-
-    selected_index = (selected_index + delta) % len(search_results_flat)
-
-    for i, frame in enumerate(search_results_flat):
-        frame.configure(bg="#5555AA" if i == selected_index else CURRENT_BG)
-
-def run_selected():
-    if 0 <= selected_index < len(search_results_flat):
-        btn = search_results_flat[selected_index].winfo_children()[0]
-        btn.invoke()
-
-def clear_search():
-    search_var.set("")
-    clear_search_results()
-
-search_entry.bind("<Down>", lambda e: move_selection(1))
-search_entry.bind("<Up>", lambda e: move_selection(-1))
-search_entry.bind("<Return>", lambda e: run_selected())
-search_entry.bind("<Escape>", lambda e: (clear_search(), do_search()))
+search_entry.bind("<Escape>", lambda e: (clear_search(), do_search())) # Clear and reset
 
 search_var.trace_add("write", do_search)
 
+# Main
 root.mainloop()
