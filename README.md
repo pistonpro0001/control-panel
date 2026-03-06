@@ -1,4 +1,4 @@
-# Control Panel
+# Control Panel/FireCenter
 
 This is the code to have full control of your system, in a sleek and stylish manner! Made entirely in Python 3.
 
