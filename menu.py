@@ -12,7 +12,7 @@
 #  Author: Piston Pro
 #  Build: Raspberry Pi OS (LXDE)
 #  Description:
-#      Unified command center providing:
+#      Command center that has:
 #      - Dashboard
 #      - Task Manager
 #      - File Manager
@@ -23,7 +23,7 @@
 #      - Search Engine
 #      - Theme Engine
 # ============================================================
-#  SYSTEM MAP (note this starts after these comments, not exactly right)
+#  SYSTEM MAP (note this starts after these comments, and it isn't exactly right)
 #
 #  1–40     Globals & Paths
 #  41–150   ToggleSwitch Widget
