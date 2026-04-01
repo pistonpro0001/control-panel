@@ -23,24 +23,6 @@
 #      - Search Engine
 #      - Theme Engine
 # ============================================================
-#  SYSTEM MAP (note this starts after these comments, and it isn't exactly right)
-#
-#  1–40     Globals & Paths
-#  41–150   ToggleSwitch Widget
-#  151–220  Theme Engine
-#  221–330  Popups & Command Execution
-#  331–420  GUI Setup
-#  421–520  Tasks Tab
-#  521–600  Settings Tab
-#  601–780  Plugins (API, Loader, Tools)
-#  781–1150 File Manager
-#  1151–1250 Dashboard
-#  1251–1350 Favorites
-#  1351–1500 Command Palette
-#  1501–1650 Scheduler
-#  1651–1850 Search Engine
-#  1851–end Main Loop
-# ============================================================
 
 import tkinter as tk
 from tkinter import ttk
@@ -154,6 +136,7 @@ class PanelContext:
 # -------------------------------
 #  Theme Handling
 # -------------------------------
+
 def load_theme():
     with open(THEME_FILE, "r") as f:
         return f.read().strip()
@@ -205,6 +188,7 @@ def apply_theme():
 # -------------------------------
 #  Popups + Command Execution
 # -------------------------------
+
 def truncate_output(text, max_lines=15, max_chars=500):
     if not text:
         return ""
@@ -287,6 +271,7 @@ def run_script_with_popup(name, path):
 # -------------------------------
 #  GUI Setup
 # -------------------------------
+
 root = tk.Tk()
 root.title("Command Center")
 root.geometry("1050x540")   # <--- widened window
@@ -358,13 +343,13 @@ panel = PanelContext(root, notebook, tabs)
 
 # Keyboard Shortcuts
     
-# Ctrl+S → jump to Search tab
+# Ctrl+S -> jump to Search tab
 root.bind("<Control-s>", lambda e: notebook.select(tabs["Search"]))
 
-# Ctrl+T → toggle theme
+# Ctrl+T -> toggle theme
 root.bind("<Control-t>", lambda e: theme_toggle.toggle())
 
-# Ctrl+F → open plugin folder in Files tab
+# Ctrl+F -> open plugin folder in Files tab
 root.bind("<Control-f>", lambda e: (
     notebook.select(tabs["Files"]),
     path_var.set(PLUGIN_DIR),
