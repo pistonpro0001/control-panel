@@ -477,7 +477,7 @@ def run_async(func, *args, **kwargs):
 plugins_tab = tabs["Plugins"]
 
 def refresh_plugins():
-    global items, PLUGINS_READY
+    global items
     
     if not PLUGINS_READY:
         return
