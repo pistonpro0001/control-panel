@@ -298,7 +298,7 @@ notebook = ttk.Notebook(root, style="CustomNotebook.TNotebook")
 notebook.pack(fill="both", expand=True)
 
 tab_names = ["Dashboard", "System", "Developer", "Plugins", "Tasks",
-             "Network", "Maintenance", "Visual", "Files", "Favorites",
+             "Network", "Maintenance", "Files", "Favorites",
              "Scheduler", "Clipboard", "Search", "Settings"]
 
 dash_interval = tk.IntVar(value=5)
@@ -1109,15 +1109,17 @@ def update_dashboard():
     fg = "#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000"
 
     # CPU Temp
-    try:
-        raw = subprocess.check_output("vcgencmd measure_temp", shell=True).decode().strip()
-        # raw looks like: temp=48.0'C
-        celsius = float(raw.split("=")[1].split("'")[0])
-        fahrenheit = (celsius * 9/5) + 32
-        temp = f"{celsius:.1f}°C / {fahrenheit:.1f}°F"
-    except:
+    
+    temps = psutil.sensors_temperatures()
+    if temps:
+        for name, entries in temps.items():
+            for entry in entries:
+                celsius = entry.current
+                fahrenheit = (celsius * 9/5) + 32
+                temp = f"{celsius:.1f}°C / {fahrenheit:.1f}°F"
+                break
+    else:
         temp = "N/A"
-
 
     # Memory
     try:
@@ -1311,13 +1313,6 @@ add_inline_item("Maintenance", "Update System",
                 "sudo apt update && sudo apt upgrade -y", kind="action")
 add_inline_item("Maintenance", "Clean Packages",
                 "sudo apt autoremove -y && sudo apt clean", kind="action")
-
-# --- Visual ---
-add_section(tabs["Visual"], "Visual & UI Tools")
-add_inline_item("Visual", "Open File Manager", "pcmanfm", kind="action")
-add_inline_item("Visual", "Open Terminal", "lxterminal", kind="action")
-add_inline_item("Visual", "Restart Panel", "lxpanelctl restart", kind="action")
-add_inline_item("Visual", "Restart Openbox", "openbox --restart", kind="action")
 
 
 # -------------------------------
