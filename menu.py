@@ -2002,7 +2002,7 @@ def do_search(*args):
 
             ttk.Button(outer, text=display, command=run_and_record).pack(fill="x")
 
-search_entry.bind("<Escape>", lambda e: (search_var.set(""), clear_search_results, do_search())) # Clear and reset
+search_entry.bind("<Escape>", lambda e: (search_var.set(""), clear_search_results(), do_search())) # Clear and reset
 
 search_var.trace_add("write", do_search)
 
