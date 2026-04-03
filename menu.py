@@ -823,7 +823,10 @@ def cut_file(path):
     FILE_CLIPBOARD["path"] = path
 
 def delete_file(path):
-    os.remove(path)
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    else:
+        os.remove(path)
     refresh_files()
 
 def paste_file():
@@ -1120,6 +1123,7 @@ def update_dashboard():
                 break
     else:
         temp = "N/A"
+        fahrenheit = 95
 
     # Memory
     try:
@@ -1296,9 +1300,6 @@ add_inline_item("Developer", "Python Version", "python3 --version", kind="info")
 add_inline_item("Developer", "Pip Packages", "pip3 list", kind="info")
 add_inline_item("Developer", "Disk Usage", "df -h /", kind="info")
 add_inline_item("Developer", "Memory Usage", "free -h", kind="info")
-add_inline_item("Developer", "CPU Temperature", "vcgencmd measure_temp", kind="info")
-add_inline_item("Developer", "ARM Memory", "vcgencmd get_mem arm", kind="info")
-add_inline_item("Developer", "GPU Memory", "vcgencmd get_mem gpu", kind="info")
 add_inline_item("Developer", "Display Server", "echo $XDG_SESSION_TYPE", kind="info")
 
 # --- Network ---
@@ -1393,14 +1394,6 @@ def register_builtin_commands():
         "Settings",
         "Enable or disable fuzzy matching",
         lambda: fuzzy_toggle.toggle()
-    )
-
-    # System
-    register_command(
-        "Open Terminal",
-        "System",
-        "Launch LXTerminal",
-        lambda: subprocess.Popen(["lxterminal"])
     )
 
     register_command(
@@ -1699,7 +1692,7 @@ def scheduler_loop():
                     run_inline_with_popup(task["name"], task["command"], task["kind"])
                 scheduled_tasks.remove(task)
                 refresh_task_list()
-        time.sleep(30)
+        time.sleep(1)
 
 threading.Thread(target=scheduler_loop, daemon=True).start()
 
