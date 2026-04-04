@@ -1,13 +1,12 @@
 #!/bin/bash
 
 echo "======================================"
-echo " Installing Command Center (Clean Build)"
+echo " Installing FireCenter"
 echo "======================================"
 
-# Update system
-sudo apt update
+sudo apt update && sudo apt full-upgrade -y
 
-echo "---- Installing system packages ----"
+echo "---- installing system packages ----"
 sudo apt install -y \
     python3 \
     python3-pip \
@@ -16,7 +15,7 @@ sudo apt install -y \
     mousepad \
     thonny
 
-echo "---- Installing Python packages ----"
+echo "---- installing python packages ----"
 pip3 install --upgrade pip
 
 pip3 install \
@@ -24,14 +23,14 @@ pip3 install \
     psutil \
     pyperclip
 
-echo "---- Optional clipboard support ----"
+echo "----instaling clipboard support ----"
 sudo apt install -y xclip xsel 2>/dev/null
 
-echo "---- Creating plugin directory ----"
+echo "---- creating plugin directory ----"
 mkdir -p ~/.controlpanel_plugins
 
 echo "======================================"
-echo " Installation Complete!"
+echo "Install complete!"
 echo "======================================"
-echo "Run your app with:"
+echo "Run it (in this directory) with:"
 echo "python3 menu.py"
