@@ -1827,6 +1827,13 @@ def do_search(*args):
     fg = "#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000"
     results_container.configure(bg=CURRENT_BG)
 
+    #al ittle bit of easte r eg gs spac ed out so no ct rl f ing them
+    if query == "steamy noodle bowl":
+        print("HOW TF DID YOU KNOW?")
+        
+    if query == "a website?":
+        print("Yes, thesteamynoodlebowl.netlify.app")
+
     # Show history when no current search
     if not query:
         if search_history:
