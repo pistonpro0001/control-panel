@@ -902,21 +902,71 @@ def fuzzy_match(query, choices):
 
 # --- Image files ---
 IMAGE_EXTS = {
-    ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".webp", ".svg"
+    ".jpg", ".jpeg", ".jpe", ".jif", ".jfif", ".jfi",  # JPEG
+    ".png", ".apng",                                  # PNG & Animated PNG
+    ".gif",                                           # GIF
+    ".webp",                                          # WebP
+    ".avif",                                          # AVIF (Modern High Compression)
+    ".heic", ".heif", ".hif",                         # HEIC/HEIF (Apple/Modern)
+    
+    # Lossless & Bitmap
+    ".tiff", ".tif",                                  # TIFF
+    ".bmp", ".dib",                                   # BMP
+    ".tga", ".icb", ".vda", ".vst",                   # Targa
+    
+    # Vector & Design
+    ".svg", ".svgz",                                  # SVG
+    ".ico", ".cur",                                   # Windows Icon/Cursor
+    ".psd", ".psb",                                   # Photoshop (Standard & Large)
+    ".ai", ".eps",                                    # Illustrator / PostScript
+    ".xd", ".sketch", ".fig",                         # UX Design formats
+    ".indd", ".indt",                                 # InDesign
+    ".xcf",                                           # GIMP
+    
+    # Professional RAW Formats
+    ".raw", ".arw", ".cr2", ".cr3", ".nef", ".nrw",   # Sony, Canon, Nikon
+    ".orf", ".raf", ".dng", ".rw2", ".srw", ".k25",   # Olympus, Fuji, Adobe, Panasonic, Samsung
+    ".bay", ".erf", ".mef", ".pef", ".sr2", ".x3f"    # Miscellaneous Raw
 }
 
 # --- Script / code files ---
 SCRIPT_EXTS = {
-    ".py", ".sh", ".html", ".htm", ".css", ".js",
-    ".c", ".cpp", ".h", ".hpp", ".java", ".php",
-    ".rb", ".lua", ".go", ".rs", ".swift", ".ts"
+    # Scripting & Shell
+    '.py', '.pyw', '.sh', '.bash', '.zsh', '.ps1', '.php', '.rb', '.pl', '.lua', 
+    '.tcl', '.awk', '.bat', '.cmd', '.vbs', '.js', '.ts', '.dart', '.r',
+
+    # Systems & Compiled Source
+    '.c', '.cpp', '.cc', '.cxx', '.h', '.hpp', '.cs', '.java', '.kt', '.swift', 
+    '.go', '.rs', '.m', '.mm', '.scala', '.erl', '.ex', '.exs', '.hs', '.clj', 
+    '.asm', '.s', '.v', '.sv',
+
+    # Web Markup & Logic
+    '.html', '.htm', '.xhtml', '.css', '.scss', '.sass', '.less',
+    '.jsp', '.asp', '.aspx', '.jsx', '.tsx', '.svelte', '.vue', '.coffee',
+
+    # Binary & Compiled Executables
+    '.exe', '.dll', '.so', '.dylib', '.bin', '.app', '.msi', '.com', '.scr',
+    '.pyc', '.pyo', '.pyd', '.jar', '.beam',
+
+    # Build Systems & Specialized Scripts
+    '.ipynb', '.makefile', '.cmake', '.dockerfile', '.sql', '.proto', '.graphql'
 }
 
-# --- Text-like files (fallback to file icon) ---
+# --- Text & Configuration ---
 TEXT_EXTS = {
-    ".txt", ".md", ".json", ".csv", ".ini", ".cfg", ".log",
-    ".yaml", ".yml", ".xml", ".toml", ".rst"
+    # Plain Text & Documentation
+    ".txt", ".md", ".rst", ".adoc", ".text", ".nfo", ".tex", ".latex", ".readme", ".license",
+    
+    # Data & Serialization (Non-Executable)
+    ".json", ".jsonl", ".csv", ".tsv", ".xml", ".yaml", ".yml", ".toml", ".ndjson",
+    
+    # Configuration & Logs
+    ".ini", ".cfg", ".log", ".conf", ".env", ".properties", ".prefs", ".opts",
+    
+    # Dev Metadata
+    ".gitignore", ".dockerignore", ".editorconfig"
 }
+
 
 # File tab UI
 def refresh_files(search_query=None):
