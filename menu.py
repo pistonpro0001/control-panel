@@ -846,6 +846,32 @@ def paste_file():
     
 # File right-click menu
 
+def run_file(p):
+    ext = os.path.splitext(p)[1].lower()
+
+    # Desktop launchers
+    if ext == ".desktop":
+        subprocess.Popen(["xdg-open", p])
+        return
+
+    # Shell scripts
+    if ext == ".sh":
+        subprocess.Popen(["/bin/bash", p])
+        return
+
+    # Python scripts (run, not open)
+    if ext == ".py":
+        subprocess.Popen(["python3", p])
+        return
+
+    # Executable bit set
+    if os.access(p, os.X_OK):
+        subprocess.Popen([p])
+        return
+
+    # Fallback
+    subprocess.Popen(["xdg-open", p])
+
 def show_file_menu(event, path, is_exec):
     menu = tk.Menu(root, tearoff=0,
                    bg=CURRENT_BG,
@@ -1140,32 +1166,6 @@ def refresh_files(search_query=None):
                 return
 
             # Everything else → default handler
-            subprocess.Popen(["xdg-open", p])
-
-        def run_file(p):
-            ext = os.path.splitext(p)[1].lower()
-
-            # Desktop launchers
-            if ext == ".desktop":
-                subprocess.Popen(["xdg-open", p])
-                return
-
-            # Shell scripts
-            if ext == ".sh":
-                subprocess.Popen(["/bin/bash", p])
-                return
-
-            # Python scripts (run, not open)
-            if ext == ".py":
-                subprocess.Popen(["python3", p])
-                return
-
-            # Executable bit set
-            if os.access(p, os.X_OK):
-                subprocess.Popen([p])
-                return
-
-            # Fallback
             subprocess.Popen(["xdg-open", p])
 
         # -----------------------------
