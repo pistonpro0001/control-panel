@@ -27,7 +27,7 @@ echo "----instaling clipboard support ----"
 sudo apt install -y xclip xsel 2>/dev/null
 
 echo "---- creating plugin directory ----"
-mkdir -p ~/.controlpanel_plugins
+mkdir -p "$(dirname "$0")/.controlpanel_plugins"
 
 echo "======================================"
 echo "Install complete!"
