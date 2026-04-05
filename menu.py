@@ -41,7 +41,6 @@ import pyperclip
 # Global path variables
 
 HOME_DIR = os.path.dirname(os.path.abspath(__file__)) + "/"
-print(HOME_DIR)
 THEME_FILE = HOME_DIR + ".controlpanel_theme"
 PLUGIN_DIR = HOME_DIR + ".controlpanel_plugins"
 SEARCH_HISTORY_FILE = HOME_DIR + ".controlpanel_search_history"
@@ -1068,10 +1067,11 @@ def refresh_files(search_query=None):
         refresh_files(search_query=search_var.get().strip())
         
     def clear_search(event=None):
+        search_var.set("")
         refresh_files()
         
     search_entry.bind("<Return>", do_search)
-    search_entry.bind("<Escape>", do_search)
+    search_entry.bind("<Escape>", clear_search)
     
     ttk.Button(left_frame, text="New Folder",
                command=lambda: create_new_item(path_var.get(), True)).pack(pady=2)
