@@ -62,9 +62,8 @@ If not installed, install it via your package manager.
 
 ## 2. Download the Project
 
-* Click the **Code** dropdown
-* Select **Download ZIP**
-* Extract it anywhere you want
+* Download the latest release
+* Extract the zip file wherever you want
 
 ---
 
