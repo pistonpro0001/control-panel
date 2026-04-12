@@ -609,7 +609,11 @@ def register(api):
         update()
         return frame
     
-    #Add widget to whatever tab you want, replace 'System'
+    #Add widget to whatever tab you want, replace 'System' with either:
+    #Developer
+    #Network
+    #Maintenance
+    #Settings
     api["add_widget"].append(("System", draw_widget))"""
         with open(filepath, "w") as f:
             f.write(template)
@@ -1457,14 +1461,14 @@ def register_builtin_commands():
     register_command(
         "Reboot",
         "System",
-        "Restart the Raspberry Pi",
+        "Restart the System",
         lambda: subprocess.Popen(["reboot"])
     )
 
     register_command(
         "Shutdown",
         "System",
-        "Power off the Raspberry Pi",
+        "Power off the System",
         lambda: subprocess.Popen(["shutdown", "now"])
     )
 
