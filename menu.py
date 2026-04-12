@@ -1416,7 +1416,7 @@ def update_clipboard():
 update_clipboard()
 
 # -------------------------------
-#  Command Pallete Commands
+#  Command Pallete Functions
 # -------------------------------
 
 COMMANDS = []
