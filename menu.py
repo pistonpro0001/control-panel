@@ -1156,7 +1156,7 @@ def refresh_files(search_query=None):
             ttk.Button(frame, text="Run", command=lambda p=full: run_file(p)).pack(side="right")
 
         # -----------------------------
-        # OPEN BUTTON (always available)
+        # OPEN BUTTON (always there)
         # -----------------------------
 
         ttk.Button(frame, text="Open", command=lambda p=full: open_file(p)).pack(side="right")
@@ -1340,6 +1340,7 @@ def load_plugins():
                     f"Plugin failed during register:\n{e}"
                 )
 
+# Its its own function to format it better
 def get_storage_usage():
     try:
         result = subprocess.check_output("df -h /", shell=True).decode().splitlines()[1]
