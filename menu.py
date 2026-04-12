@@ -344,13 +344,13 @@ panel = PanelContext(root, notebook, tabs)
 
 # Keyboard Shortcuts
     
-# Ctrl+S -> jump to Search tab
+# Ctrl+S  ->  jump to Search tab
 root.bind("<Control-s>", lambda e: notebook.select(tabs["Search"]))
 
-# Ctrl+T -> toggle theme
+# Ctrl+T  ->  toggle theme
 root.bind("<Control-t>", lambda e: theme_toggle.toggle())
 
-# Ctrl+F -> open plugin folder in Files tab
+# Ctrl+F  ->  open plugin folder in Files tab
 root.bind("<Control-f>", lambda e: (
     notebook.select(tabs["Files"]),
     path_var.set(PLUGIN_DIR),
@@ -788,12 +788,12 @@ context_target_path = None
 def open_file(p):
     ext = os.path.splitext(p)[1].lower()
 
-    # Python files → Thonny
+    # Python files -> Thonny
     if ext == ".py":
         subprocess.Popen(["thonny", p])
         return
 
-    # Text-based files → Mousepad
+    # Text-based files -> Mousepad
     text_exts = [
                 ".txt", ".md", ".json", ".csv", ".ini", ".cfg",
                 ".log", ".yaml", ".yml", ".xml", ".html", ".css",
@@ -803,12 +803,12 @@ def open_file(p):
         subprocess.Popen(["mousepad", p])
         return
 
-            # Desktop launchers → open normally
+    # Desktop launchers -> open normally
     if ext == ".desktop":
         subprocess.Popen(["xdg-open", p])
         return
 
-    # Everything else → default handler
+    # Everything else -> default handler
     subprocess.Popen(["xdg-open", p])
 
 # Clipboard (for the file cut/paste)
@@ -887,6 +887,7 @@ def show_file_menu(event, path, is_exec):
     if is_exec:
         menu.add_command(label="Run", command=lambda: run_file(path))
 
+    # Operations
     menu.add_separator()
     menu.add_command(label="Rename", command=lambda: rename_file(path))
     menu.add_command(label="Delete", command=lambda: delete_file(path))
@@ -1149,12 +1150,12 @@ def refresh_files(search_query=None):
         def open_file(p):
             ext = os.path.splitext(p)[1].lower()
 
-            # Python files → Thonny
+            # Python files -> Thonny
             if ext == ".py":
                 subprocess.Popen(["thonny", p])
                 return
 
-            # Text-based files → Mousepad
+            # Text-based files -> Mousepad
             text_exts = [
                 ".txt", ".md", ".json", ".csv", ".ini", ".cfg",
                 ".log", ".yaml", ".yml", ".xml", ".html", ".css",
@@ -1164,12 +1165,12 @@ def refresh_files(search_query=None):
                 subprocess.Popen(["mousepad", p])
                 return
 
-            # Desktop launchers → open normally
+            # Desktop launchers -> open normally
             if ext == ".desktop":
                 subprocess.Popen(["xdg-open", p])
                 return
 
-            # Everything else → default handler
+            # Everything else -> default handler
             subprocess.Popen(["xdg-open", p])
 
         # -----------------------------
@@ -1612,7 +1613,7 @@ def open_command_palette():
     render_results()
     
 
-# Ctrl+P → open command palette
+# Ctrl+P -> open command palette
 root.bind("<Control-p>", lambda e: open_command_palette())
 
 def switch_tab(offset):
