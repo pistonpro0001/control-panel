@@ -260,7 +260,7 @@ def run_inline_with_popup(name, command, kind="info"):
             subprocess.Popen(command, shell=True)
             show_popup(name, "Command executed.")
     except Exception as e:
-        show_popup(f"{name} - Error", str(e))
+        show_popup(f"{name} - Error {e}")
 
 def run_script_with_popup(name, path):
     try:
@@ -276,7 +276,7 @@ def run_script_with_popup(name, path):
 
 root = tk.Tk()
 root.title("Command Center")
-root.geometry("1050x540")   # <--- widened window
+root.geometry("1050x540")
 root.resizable(False, False)
 
 ICON_PATH = HOME_DIR + "icons/"
@@ -290,7 +290,7 @@ def load_icon(name):
         print("Something went wrong loading the icons. Check that they exist (in the icons/ folder).")
         sys.exit(0)
 
-icons = { "folder": load_icon("folder.png"), "file": load_icon("file.png"), "script": load_icon("script.png"), "image": load_icon("image.png"), "exec": load_icon("exec.png"), "video": load_icon("video.png"), "audio": load_icon("audio.png") }
+icons = {"folder": load_icon("folder.png"), "file": load_icon("file.png"), "script": load_icon("script.png"), "image": load_icon("image.png"), "exec": load_icon("exec.png"), "video": load_icon("video.png"), "audio": load_icon("audio.png")}
 
 style = ttk.Style()
 
@@ -736,7 +736,7 @@ def show_preview(path):
             with open(path, "r") as f:
                 text = f.read(2000)  # first 2k chars
 
-            # Pretty JSON
+            # Pretty json
             if ext == ".json":
                 try:
                     obj = json.loads(text)
