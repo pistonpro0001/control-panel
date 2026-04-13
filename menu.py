@@ -185,6 +185,7 @@ def apply_theme():
     style.configure("TLabel",
                     background=CURRENT_BG,
                     foreground=fg)
+    root.update()
 
 
 # -------------------------------
