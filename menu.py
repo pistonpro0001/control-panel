@@ -219,7 +219,7 @@ def truncate_output(text, max_lines=30, max_chars=1000):
         truncated = True
 
     if truncated:
-        joined = joined.rstrip() + "\n... (output truncated)"
+        joined = joined.rstrip() + "..."
     return joined
 
 def show_popup(title, message):
@@ -1422,7 +1422,7 @@ def update_clipboard():
     for item in reversed(history):
         btn = ttk.Button(
             clipboard_tab,
-            text = item[:97].replace("\n", " ") + "..." if len(item) > 97 else item[:97].replace("\n", " "),
+            text = truncate_output(item.replace("\n", " "), max_chars=97),
             command = lambda t=item: pyperclip.copy(t)
             )
         btn.pack(fill="x", pady=5)
