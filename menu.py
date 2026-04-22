@@ -172,6 +172,7 @@ def apply_theme():
                     background=CURRENT_BG,
                     foreground=fg,
                     borderwidth=0)
+    
     style.map("TButton",
               background=[("active", hover_bg)],
               foreground=[("active", hover_fg)])
@@ -179,9 +180,11 @@ def apply_theme():
     style.configure("CustomNotebook.TNotebook",
                     background=CURRENT_BG,
                     borderwidth=0)
+    
     style.configure("CustomNotebook.TNotebook.Tab",
                     background=CURRENT_BG,
                     foreground=fg)
+    
     style.map("CustomNotebook.TNotebook.Tab",
               background=[("selected", CURRENT_BG)],
               foreground=[("selected", fg)])
@@ -189,6 +192,7 @@ def apply_theme():
     style.configure("TLabel",
                     background=CURRENT_BG,
                     foreground=fg)
+    
     style.configure("TFrame",
                     background=CURRENT_BG,
                     foreground=fg)
