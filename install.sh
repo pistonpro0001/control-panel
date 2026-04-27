@@ -35,6 +35,6 @@ echo "======================================"
 echo "Install complete!"
 echo "======================================"
 echo "Run it (in this directory) with:"
-echo "source .venv/bin/activate && python menu.py"
+echo "source .venv/bin/activate && python main.py"
 
 rm -- "$0" || true
