@@ -43,6 +43,7 @@ import xml.dom.minidom
 from tkinterweb import HtmlFrame
 import markdown2
 import pygame
+import io
 
 # Global path variables
 
@@ -762,7 +763,7 @@ def show_preview(path):
         except:
             pass
 
-    # --- 1. NEW: SVG Preview (Zero dependencies! Handled by tkinterweb) ---
+    # --- SVG Preview (Zero dependencies! Handled by tkinterweb) ---
     if ext == ".svg":
         try:
             html_view = HtmlFrame(preview_frame)
@@ -772,7 +773,7 @@ def show_preview(path):
         except Exception as e:
             print(f"SVG Preview error: {e}")
 
-    # --- 2. NEW: PDF Preview (PyMuPDF grabs page 1 and passes to PIL) ---
+    # --- PDF Preview (PyMuPDF grabs page 1 and passes to PIL) ---
     if ext == ".pdf":
         try:
             doc = pymupdf.open(path)
@@ -800,7 +801,7 @@ def show_preview(path):
         except Exception as e:
             print(f"PDF Preview error: {e}")
 
-    # --- 3. NEW: Pure Audio Preview (Pygame Mixer) ---
+    # --- Pure Audio Preview (Pygame Mixer) ---
     audio_exts = [".mp3", ".wav", ".ogg"]
     if ext in audio_exts:
         try:
@@ -893,6 +894,160 @@ def show_preview(path):
             return
         except Exception as e:
             print(f"Video Preview error: {e}")
+            
+    if ext in [".m3u", ".m3u8"]:
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+
+            playlist_items = []  # Stores the raw file path/URL
+            song_titles = []     # Stores the clean song name
+            
+            # Temporary variable to track the last found title
+            last_extinf_title = None
+
+            for line in lines:
+                clean_line = line.strip()
+                if not clean_line:
+                    continue
+                
+                if clean_line.startswith("#EXTINF:"):
+                    # Extract everything after the first comma
+                    if "," in clean_line:
+                        last_extinf_title = clean_line.split(",", 1)[1]
+                        
+                elif not clean_line.startswith("#"):
+                    # This is a media link or file path
+                    playlist_items.append(clean_line)
+                    
+                    # If we found a title right above it, use it! 
+                    if last_extinf_title:
+                        song_titles.append(last_extinf_title)
+                        last_extinf_title = None # Reset for next
+                    else:
+                        # Fallback to the file name if no #EXTINF was provided
+                        song_titles.append(os.path.basename(clean_line))
+
+            # --- Build UI elements ---
+            lbl = tk.Label(preview_frame, text="Playlist", 
+                           bg=CURRENT_BG, fg=fg, font=("TkDefaultFont", 11, "bold"))
+            lbl.pack(pady=5)
+
+            listbox = tk.Listbox(preview_frame, bg=CURRENT_BG, fg=fg, bd=0, highlightthickness=0)
+            listbox.pack(fill="both", expand=True, padx=10, pady=5)
+
+            # 💡 Insert the clean song titles into the visual list
+            for title in song_titles:
+                listbox.insert(tk.END, title)
+
+            def on_playlist_double_click(event):
+                selection = listbox.curselection()
+                if selection:
+                    index = selection[0]
+                    target = playlist_items[index]
+                    
+                    # Dual-stream YouTube extraction
+                    if "youtube.com" in target or "youtu.be" in target:
+                        
+                        try:
+                            # Clear previous playlist widgets
+                            for widget in preview_frame.winfo_children():
+                                if widget != close_btn: 
+                                    widget.destroy()
+
+                            lbl = tk.Label(preview_frame, text="⏳ Caching stream to /tmp...", bg=CURRENT_BG, fg=fg)
+                            lbl.pack(pady=20)
+                            preview_frame.update()
+
+                            # Set up paths directly in the Linux RAM-disk directory
+                            temp_video = "/tmp/firecenter_yt_video.mp4"
+                            temp_audio = "/tmp/firecenter_yt_audio.wav"
+
+                            # Tell yt-dlp to download the video but avoid broken AV1 codecs
+                            subprocess.run(
+                                ["yt-dlp", "-f", "bestvideo[vcodec^=avc]+bestaudio/best[ext=mp4]", 
+                                 "-o", temp_video, "--merge-output-format", "mp4", target],
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
+                            )
+
+                            # Rip the audio out to a clean WAV file for Pygame
+                            subprocess.run(
+                                ['ffmpeg', '-y', '-i', temp_video, '-vn', '-acodec', 'pcm_s16le', '-ar', '44100', '-ac', '2', temp_audio],
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
+                            )
+
+                            cap = cv2.VideoCapture(temp_video)
+                            
+                            pygame.mixer.music.load(temp_audio)
+                            pygame.mixer.music.play()
+
+                            lbl.destroy()
+                            lbl = tk.Label(preview_frame, bg=CURRENT_BG)
+                            lbl.pack(pady=10)
+
+                            def stream():
+                                if not preview_frame.winfo_exists():
+                                    cap.release()
+                                    pygame.mixer.music.stop()
+                                    for f in [temp_video, temp_audio]:
+                                        if os.path.exists(f): os.remove(f)
+                                    return
+                                
+                                # 1. Calculate target frame based on real-time audio position
+                                current_millis = pygame.mixer.music.get_pos()
+                                fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+                                target_frame = int((current_millis / 1000.0) * fps)
+                                
+                                # 2. Force OpenCV to skip ahead to match the audio clock
+                                current_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
+                                while current_frame < target_frame:
+                                    cap.grab()  # Grabs the frame fast without decoding it
+                                    current_frame += 1
+                                
+                                # 3. Read and render the correctly aligned frame
+                                ret, frame = cap.read()
+                                if ret:
+                                    cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                                    img = Image.fromarray(cv2image)
+                                    img.thumbnail((280, 280))
+                                    
+                                    tkimg = ImageTk.PhotoImage(image=img)
+                                    lbl.configure(image=tkimg)
+                                    lbl.image = tkimg
+                                    
+                                    # Fast polling to keep checking the audio clock
+                                    lbl.after(10, stream)
+                                else:
+                                    # Loop video and audio together
+                                    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                                    try: pygame.mixer.music.play()
+                                    except: pass
+                                    lbl.after(10, stream)
+
+                            def stop_video():
+                                cap.release()
+                                pygame.mixer.music.stop()
+                                for f in [temp_video, temp_audio]:
+                                    if os.path.exists(f): os.remove(f)
+                                clear_preview()
+
+                            close_btn.configure(command=stop_video)
+                            stream()
+                            return
+                            
+                        except Exception as e:
+                            print(f"Failed to process YouTube stream: {e}")
+                            
+                    # Normal local file fallback
+                    if not os.path.isabs(target) and not target.startswith("http"):
+                        target = os.path.join(os.path.dirname(path), target)
+                    show_preview(target)
+
+            listbox.bind("<Double-Button-1>", on_playlist_double_click)
+            return
+            
+        except Exception as e:
+            print(f"M3U Preview error: {e}")
 
     # --- HTML preview ---
     if ext in [".html", ".htm", ".xhtml"]:
