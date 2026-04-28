@@ -82,6 +82,7 @@ chmod +x install.sh
 ```bash
 source .venv/bin/activate && python main.py
 ```
+OR double click the `.desktop` file (Ensure you right-click it and select "Allow Launching" or mark it as executable if prompted).
 
 ### ⚠️ First Run Note
 
@@ -95,7 +96,7 @@ If it appears to hang, wait a moment, stop it with `Ctrl+C`, and run it again.
 Plugins are stored in:
 
 ```bash
-~/.controlpanel_plugins
+/path/to/where/you/downloaded/it/.controlpanel_plugins/
 ```
 
 You can create or modify plugins to extend functionality.
