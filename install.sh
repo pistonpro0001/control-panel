@@ -18,16 +18,16 @@ fi
 DIR="$(cd "$(dirname "$0")" && pwd)"
 VENV_PYTHON="$DIR/.venv/bin/python"
 
-# 1. Update system and install system packages first (Requires Root)
+# Update system and install system packages first (Requires Root)
 echo "Updating system and installing system packages..."
 sudo apt update && sudo apt full-upgrade -y
 sudo apt install -y dex python3-tk xdg-utils mousepad thonny xclip xsel build-essential libssl-dev libffi-dev ffmpeg || true
 
-# 2. Create and configure virtual environment as the standard user (No Sudo)
+# Create and configure virtual environment as the standard user (No Sudo)
 echo "Creating venv..."
 sudo -u "$VENV_OWNER" python3 -m venv "$DIR/.venv"
 
-# 3. Use the venv's direct python path to install packages
+# Use the venv's direct python path to install packages
 echo "Upgrading pip in venv..."
 sudo -u "$VENV_OWNER" "$VENV_PYTHON" -m pip install --upgrade pip setuptools wheel
 
@@ -37,13 +37,13 @@ sudo -u "$VENV_OWNER" "$VENV_PYTHON" -m pip install -r "$DIR/requirements.txt"
 echo "Creating plugin directory..."
 sudo -u "$VENV_OWNER" mkdir -p "$DIR/.controlpanel_plugins"
 
-# 4. Configure secure passwordless execution for app buttons (Dynamic User)
+# Configure secure passwordless execution for app buttons (Dynamic User)
 echo "Configuring secure passwordless execution for app buttons..."
 sudo mkdir -p /etc/sudoers.d
 echo "$VENV_OWNER ALL=(ALL) NOPASSWD: $VENV_PYTHON" | sudo tee /etc/sudoers.d/firecenter-control
 sudo chmod 0440 /etc/sudoers.d/firecenter-control
 
-# 5. Creating Desktop Shortcut
+# Creating Desktop Shortcut
 echo "Creating Desktop Shortcut..."
 sudo -u "$VENV_OWNER" mkdir -p "$USER_HOME/Desktop"
 
