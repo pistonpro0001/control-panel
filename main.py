@@ -998,18 +998,18 @@ def show_preview(path):
                                         if os.path.exists(f): os.remove(f)
                                     return
                                 
-                                # 1. Calculate target frame based on real-time audio position
+                                # Calculate target frame based on real-time audio position
                                 current_millis = pygame.mixer.music.get_pos()
                                 fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
                                 target_frame = int((current_millis / 1000.0) * fps)
                                 
-                                # 2. Force OpenCV to skip ahead to match the audio clock
+                                # Force OpenCV to skip ahead to match the audio clock
                                 current_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
                                 while current_frame < target_frame:
                                     cap.grab()  # Grabs the frame fast without decoding it
                                     current_frame += 1
                                 
-                                # 3. Read and render the correctly aligned frame
+                                # Read and render the correctly aligned frame
                                 ret, frame = cap.read()
                                 if ret:
                                     cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -2292,7 +2292,7 @@ def do_search(*args):
     # -----------------------------
     sources = []
 
-    # 1. Commands
+    # Commands
     for cmd in COMMANDS:
         sources.append({
             "name": cmd["name"],
@@ -2303,7 +2303,7 @@ def do_search(*args):
         })
 
 
-    # 2. Tabs
+    # Tabs
     for tab_name in tabs:
         sources.append({
             "name": tab_name,
@@ -2312,7 +2312,7 @@ def do_search(*args):
             "command": lambda t=tab_name: notebook.select(tabs[t])
         })
 
-    # 3. Plugins
+    # Plugins
     for f in os.listdir(PLUGIN_DIR):
         sources.append({
             "name": f,
@@ -2332,7 +2332,7 @@ def do_search(*args):
         
         return os.path.dirname(p)
 
-    # 4. Files (non-recursive for now)
+    # Files (non-recursive for now)
     for f in os.listdir(path_var.get()):
         sources.append({
             "name": f,
@@ -2368,13 +2368,13 @@ def do_search(*args):
         return
 
     # Map back to full objects
-    # 1. Get the match or None if not found
+    # Get the match
     matched_items = [
         next((s for s in sources if (s["name"]["name"] if isinstance(s["name"], dict) else s["name"]) == m), None) 
         for m in matches
     ]
 
-    # 2. Filter out any None values to avoid further errors
+    # Filter out any Nones
     matched_items = [item for item in matched_items if item is not None]
 
 
@@ -2421,7 +2421,7 @@ def do_search(*args):
                         pass
 
                 # Execute
-                # 1. Safely extract the potential command
+                # Safely extract the potential command
                 if isinstance(it.get("name"), dict):
                     # For nested 'Command' type items
                     cmd = it.get("name", {}).get("action")
@@ -2432,7 +2432,7 @@ def do_search(*args):
                     else:
                         cmd = it.get("action")
 
-                # 2. Check if it's a function before calling it
+                # Check if it's a function before calling it
                 if callable(cmd):
                     cmd()
                 else:
