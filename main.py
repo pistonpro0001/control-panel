@@ -722,7 +722,7 @@ def clear_preview():
         preview_frame.destroy()
         preview_frame = None
 
-
+# Largest function by far! Around 450 lines!
 def show_preview(path):
     global preview_frame
     # Clear old preview
