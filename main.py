@@ -1012,7 +1012,7 @@ def show_preview(path):
 
                                 except Exception as thread_err:
                                     if preview_frame.winfo_exists():
-                                        preview_frame.after(0, lambda: handle_thread_error(thread_err))
+                                        preview_frame.after(0, lambda t=thread_err: handle_thread_error(t))
 
                             # Media initialization and video looping
                             def start_playback(temp_video, temp_audio, caching_lbl):
