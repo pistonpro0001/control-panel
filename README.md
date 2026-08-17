@@ -1,70 +1,137 @@
-# Control Panel/FireCenter
+# Control Panel / FireCenter
 
-This is the code to have full control of your system, in a sleek and stylish manner! Made entirely in Python 3.
+A all-in-one system control interface built entirely in Python 3.
+Designed to give you full control over your system in a fast, customizable, and extensible UI.
 
-# Features
-- Dashboard to monitor system
-- Simple system commands
-- Plugin support
-- Task manager
-- Network and Visual tools
-- File manager
-- Favorites support
-- Scheduling commands
-- Visual clipboard
-- System-wide search
-- Theme and fuzzy search support
+---
 
-## Supported Systems
-V1 is very limited so far, so here are the requirements:
+# ✨ Features
 
-### OS
-Any version of Raspberry Pi OS (32 or 64 bit)\
-Debian/Ubuntu (64 bit recommended)
+* 📊 Dashboard for system monitoring
+* ⚡ Quick system commands
+* 🔌 Plugin support
+* 🧠 Task manager
+* 📁 File manager
+* ⭐ Favorites system
+* ⏱️ Command scheduling
+* 📋 Visual clipboard
+* 🔎 System-wide fuzzy search
+* 🎨 Theme support
 
-### Architecture
-ARM (32 bit or 64 bit)\
-x86_64 (64 bit)
+---
 
-### Other Requirements
-X11 or XWayland\
-Python 3.9 or newer\
-A standard Linux desktop environment (XFCE, LXDE, MATE, GNOME, KDE, etc.)
+# 🖥️ Supported Systems
 
-## Setup
-First, you're going to have to install [Python 3.9](https://www.reddit.com/r/learnpython/comments/n97okh/how_do_i_install_python_391_on_ubuntu_2004/).\
-Next, head to your terminal to install the dependencies.
+## Operating Systems
 
-### Installation
-All of the python modules you need can be installed with one command:\
-`pip install Pillow psutil pyperclip`\
-This installs all of the python requirements that allows it to function.
+* Raspberry Pi OS (32-bit or 64-bit)
+* Debian / Ubuntu (64-bit recommended)
 
-Next, you need to install a certain text editor and python editor (used by the Files tab)
+## Architecture
 
-Upgrade: `sudo apt update && sudo apt upgrade`\
-Install: `sudo apt install mousepad thonny python3-tk`
+* ARM (32-bit or 64-bit)
+* x86_64 (64-bit)
 
-(Note: `/bin/bash` and `xdg-open` must be available (both included by default on Debian/Ubuntu/Raspberry Pi OS))
+## Other Requirements
 
-### Code Setup
+* X11 or XWayland
+* Python 3.9+
+* A Linux desktop environment:
 
-To download the code, click on the Code dropdown and then click Download Zip.\
-Extract the files anywhere you want.
+  * XFCE
+  * LXDE
+  * MATE
+  * GNOME
+  * KDE
 
-## How To Run It
+---
 
-If this is your first time running it, type the command below, wait for 3 minutes, and then press Ctrl-C. Then, run it again.
+# ⚙️ Setup
 
-Go to your terminal, and type the following:\
-`python3 /place/where/you/downloaded/it/menu.py`
+## 1. Install Python
 
-## Final Notes
-With the setup complete, the Control Panel is ready to become _your_ system dashboard. Everything—from themes to plugins to file handling—is designed to be edited, extended, and experimented with.
-v1 is just the foundation. More features, polish, and customization options will come as the project grows. If you build something cool or find a way to improve the experience, contributions are always welcome.
+Make sure you have Python 3.9 or newer:
 
-Although this is just v1, I have actually been working on this project for about 6 months now. There is just a lot to explore, so I hope you have fun with it!
+```bash
+python3 --version
+```
 
-### Screenshots
-![Menu, opened to main dashboard](icons/screenshot1.png)
-![Menu, opened to file explorer](icons/screenshot2.png)
+If not installed, install it via your package manager.
+
+---
+
+## 2. Download the Project
+
+* Click the **Code** dropdown
+* Select **Download ZIP**
+* Extract it anywhere you want
+
+---
+
+## 3. Run Installer
+
+```bash
+cd /path/to/project
+chmod +x install.sh
+./install.sh
+```
+
+---
+
+# ▶️ How To Run
+
+```bash
+python3 menu.py
+```
+
+### ⚠️ First Run Note
+
+On the first launch, initialization may take a bit longer.
+If it appears to hang, wait a moment, stop it with `Ctrl+C`, and run it again.
+
+---
+
+# 📁 Plugins
+
+Plugins are stored in:
+
+```bash
+~/.controlpanel_plugins
+```
+
+You can create or modify plugins to extend functionality.
+
+---
+
+# 📝 Notes
+
+* Designed for Linux systems only
+* Some features depend on system tools (file manager, terminal, etc.)
+* Fully customizable - feel free to modify anything
+
+---
+
+# 🚀 Project Status
+
+This is **v1**.
+
+The goal is to expand with:
+
+* Better performance
+* Improved UI/UX
+* Cross-environment compatibility
+
+---
+
+# 💬 Final Thoughts
+
+This project has been in development for about 6 months and is built to be explored, modified, and extended.
+
+If you build something cool or improve the experience, contributions are welcome.
+
+---
+
+# 📸 Screenshots
+
+![Dashboard](icons/screenshot1.png)
+![File Explorer](icons/screenshot2.png)
