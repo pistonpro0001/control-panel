@@ -784,6 +784,110 @@ def rename_file(old_path):
 file_context_menu = None
 context_target_path = None
 
+# --- Image files ---
+IMAGE_EXTS = {
+    ".jpg", ".jpeg", ".jpe", ".jif", ".jfif", ".jfi",  # JPEG
+    ".png", ".apng",                                  # PNG & Animated PNG
+    ".gif",                                           # GIF
+    ".webp",                                          # WebP
+    ".avif",                                          # AVIF (Modern High Compression)
+    ".heic", ".heif", ".hif",                         # HEIC/HEIF (Apple/Modern)
+    
+    # Lossless & Bitmap
+    ".tiff", ".tif",                                  # TIFF
+    ".bmp", ".dib",                                   # BMP
+    ".tga", ".icb", ".vda", ".vst",                   # Targa
+    
+    # Vector & Design
+    ".svg", ".svgz",                                  # SVG
+    ".ico", ".cur",                                   # Windows Icon/Cursor
+    ".psd", ".psb",                                   # Photoshop (Standard & Large)
+    ".ai", ".eps",                                    # Illustrator / PostScript
+    ".xd", ".sketch", ".fig",                         # UX Design formats
+    ".indd", ".indt",                                 # InDesign
+    ".xcf",                                           # GIMP
+    
+    # Professional RAW Formats
+    ".raw", ".arw", ".cr2", ".cr3", ".nef", ".nrw",   # Sony, Canon, Nikon
+    ".orf", ".raf", ".dng", ".rw2", ".srw", ".k25",   # Olympus, Fuji, Adobe, Panasonic, Samsung
+    ".bay", ".erf", ".mef", ".pef", ".sr2", ".x3f"    # Miscellaneous Raw
+}
+
+# --- Script / code files ---
+SCRIPT_EXTS = {
+    # Scripting & Shell
+    '.py', '.pyw', '.sh', '.bash', '.zsh', '.ps1', '.php', '.rb', '.pl', '.lua', 
+    '.tcl', '.awk', '.bat', '.cmd', '.vbs', '.js', '.ts', '.dart', '.r',
+
+    # Systems & Compiled Source
+    '.c', '.cpp', '.cc', '.cxx', '.h', '.hpp', '.cs', '.java', '.kt', '.swift', 
+    '.go', '.rs', '.m', '.mm', '.scala', '.erl', '.ex', '.exs', '.hs', '.clj', 
+    '.asm', '.s', '.v', '.sv',
+
+    # Web Markup & Logic
+    '.html', '.htm', '.xhtml', '.css', '.scss', '.sass', '.less',
+    '.jsp', '.asp', '.aspx', '.jsx', '.tsx', '.svelte', '.vue', '.coffee',
+
+    # Binary & Compiled Executables
+    '.exe', '.dll', '.so', '.dylib', '.bin', '.app', '.msi', '.com', '.scr',
+    '.pyc', '.pyo', '.pyd', '.jar', '.beam',
+
+    # Build Systems & Specialized Scripts
+    '.ipynb', '.makefile', '.cmake', '.dockerfile', '.sql', '.proto', '.graphql'
+}
+
+# --- Text & Configuration ---
+TEXT_EXTS = {
+    # Plain Text & Documentation
+    ".txt", ".md", ".rst", ".adoc", ".text", ".nfo", ".tex", ".latex", ".readme", ".license",
+    
+    # Data & Serialization (Non-Executable)
+    ".json", ".jsonl", ".csv", ".tsv", ".xml", ".yaml", ".yml", ".toml", ".ndjson",
+    
+    # Configuration & Logs
+    ".ini", ".cfg", ".log", ".conf", ".env", ".properties", ".prefs", ".opts",
+    
+    # Dev Metadata
+    ".gitignore", ".dockerignore", ".editorconfig"
+}
+
+VIDEO_EXTS = {
+    # Common Web & Standard Containers
+    ".mp4", ".m4v", ".mov", ".qt", ".avi", ".wmv", ".asf", 
+    ".mpg", ".mpeg", ".m1v", ".m2v", ".mpv", ".mpe",
+    
+    # Modern & High Efficiency
+    ".webm", ".mkv", ".flv", ".f4v", ".f4p", ".f4a", ".f4b",
+    ".ogv", ".ogx", ".divx", ".xvid",
+    
+    # Professional & Broadcast
+    ".mxf", ".m2ts", ".mts", ".ts", ".tsv", ".m2p", ".ps",
+    ".vob", ".evo", ".mod", ".tod", ".dv", ".dvc",
+    
+    # Mobile & Legacy
+    ".3gp", ".3g2", ".3gpp", ".3gpp2", ".rm", ".rmvb", ".amv", ".nsv",
+    
+    # Playlist & Streaming Descriptors
+    ".m3u8", ".ism", ".ismv"
+}
+
+AUDIO_EXTS = {
+    # Common
+    ".mp3", ".m4a", ".aac", ".ogg", ".oga", ".wma", ".opus",
+    
+    # High-Fidelity
+    ".wav", ".flac", ".alac", ".aif", ".aiff", ".aifc", ".ape", ".pcm",
+    
+    # Professional & Logic
+    ".mid", ".midi", ".kar", ".rmi", ".ac3", ".dts", ".dtshd", ".thd",
+    
+    # Specialized & Legacy
+    ".amr", ".awb", ".gsm", ".ra", ".rm", ".mka", ".au", ".snd",
+    
+    # Playlist & Streaming
+    ".m3u", ".pls", ".asx"
+}
+
 # Opening; this is what you need thonny, xdg-open, and mousepad for
 def open_file(p):
     ext = os.path.splitext(p)[1].lower()
@@ -793,13 +897,7 @@ def open_file(p):
         subprocess.Popen(["thonny", p])
         return
 
-    # Text-based files -> Mousepad
-    text_exts = [
-                ".txt", ".md", ".json", ".csv", ".ini", ".cfg",
-                ".log", ".yaml", ".yml", ".xml", ".html", ".css",
-                ".js", ".c", ".cpp", ".h", ".sh"
-    ]
-    if ext in text_exts:
+    if ext in TEXT_EXTS:
         subprocess.Popen(["mousepad", p])
         return
 
@@ -929,110 +1027,6 @@ def fuzzy_match(query, choices):
 
     # Return only the text values
     return [c for _, c in scored]
-
-# --- Image files ---
-IMAGE_EXTS = {
-    ".jpg", ".jpeg", ".jpe", ".jif", ".jfif", ".jfi",  # JPEG
-    ".png", ".apng",                                  # PNG & Animated PNG
-    ".gif",                                           # GIF
-    ".webp",                                          # WebP
-    ".avif",                                          # AVIF (Modern High Compression)
-    ".heic", ".heif", ".hif",                         # HEIC/HEIF (Apple/Modern)
-    
-    # Lossless & Bitmap
-    ".tiff", ".tif",                                  # TIFF
-    ".bmp", ".dib",                                   # BMP
-    ".tga", ".icb", ".vda", ".vst",                   # Targa
-    
-    # Vector & Design
-    ".svg", ".svgz",                                  # SVG
-    ".ico", ".cur",                                   # Windows Icon/Cursor
-    ".psd", ".psb",                                   # Photoshop (Standard & Large)
-    ".ai", ".eps",                                    # Illustrator / PostScript
-    ".xd", ".sketch", ".fig",                         # UX Design formats
-    ".indd", ".indt",                                 # InDesign
-    ".xcf",                                           # GIMP
-    
-    # Professional RAW Formats
-    ".raw", ".arw", ".cr2", ".cr3", ".nef", ".nrw",   # Sony, Canon, Nikon
-    ".orf", ".raf", ".dng", ".rw2", ".srw", ".k25",   # Olympus, Fuji, Adobe, Panasonic, Samsung
-    ".bay", ".erf", ".mef", ".pef", ".sr2", ".x3f"    # Miscellaneous Raw
-}
-
-# --- Script / code files ---
-SCRIPT_EXTS = {
-    # Scripting & Shell
-    '.py', '.pyw', '.sh', '.bash', '.zsh', '.ps1', '.php', '.rb', '.pl', '.lua', 
-    '.tcl', '.awk', '.bat', '.cmd', '.vbs', '.js', '.ts', '.dart', '.r',
-
-    # Systems & Compiled Source
-    '.c', '.cpp', '.cc', '.cxx', '.h', '.hpp', '.cs', '.java', '.kt', '.swift', 
-    '.go', '.rs', '.m', '.mm', '.scala', '.erl', '.ex', '.exs', '.hs', '.clj', 
-    '.asm', '.s', '.v', '.sv',
-
-    # Web Markup & Logic
-    '.html', '.htm', '.xhtml', '.css', '.scss', '.sass', '.less',
-    '.jsp', '.asp', '.aspx', '.jsx', '.tsx', '.svelte', '.vue', '.coffee',
-
-    # Binary & Compiled Executables
-    '.exe', '.dll', '.so', '.dylib', '.bin', '.app', '.msi', '.com', '.scr',
-    '.pyc', '.pyo', '.pyd', '.jar', '.beam',
-
-    # Build Systems & Specialized Scripts
-    '.ipynb', '.makefile', '.cmake', '.dockerfile', '.sql', '.proto', '.graphql'
-}
-
-# --- Text & Configuration ---
-TEXT_EXTS = {
-    # Plain Text & Documentation
-    ".txt", ".md", ".rst", ".adoc", ".text", ".nfo", ".tex", ".latex", ".readme", ".license",
-    
-    # Data & Serialization (Non-Executable)
-    ".json", ".jsonl", ".csv", ".tsv", ".xml", ".yaml", ".yml", ".toml", ".ndjson",
-    
-    # Configuration & Logs
-    ".ini", ".cfg", ".log", ".conf", ".env", ".properties", ".prefs", ".opts",
-    
-    # Dev Metadata
-    ".gitignore", ".dockerignore", ".editorconfig"
-}
-
-VIDEO_EXTS = {
-    # Common Web & Standard Containers
-    ".mp4", ".m4v", ".mov", ".qt", ".avi", ".wmv", ".asf", 
-    ".mpg", ".mpeg", ".m1v", ".m2v", ".mpv", ".mpe",
-    
-    # Modern & High Efficiency
-    ".webm", ".mkv", ".flv", ".f4v", ".f4p", ".f4a", ".f4b",
-    ".ogv", ".ogx", ".divx", ".xvid",
-    
-    # Professional & Broadcast
-    ".mxf", ".m2ts", ".mts", ".ts", ".tsv", ".m2p", ".ps",
-    ".vob", ".evo", ".mod", ".tod", ".dv", ".dvc",
-    
-    # Mobile & Legacy
-    ".3gp", ".3g2", ".3gpp", ".3gpp2", ".rm", ".rmvb", ".amv", ".nsv",
-    
-    # Playlist & Streaming Descriptors
-    ".m3u8", ".ism", ".ismv"
-}
-
-AUDIO_EXTS = {
-    # Common
-    ".mp3", ".m4a", ".aac", ".ogg", ".oga", ".wma", ".opus",
-    
-    # High-Fidelity
-    ".wav", ".flac", ".alac", ".aif", ".aiff", ".aifc", ".ape", ".pcm",
-    
-    # Professional & Logic
-    ".mid", ".midi", ".kar", ".rmi", ".ac3", ".dts", ".dtshd", ".thd",
-    
-    # Specialized & Legacy
-    ".amr", ".awb", ".gsm", ".ra", ".rm", ".mka", ".au", ".snd",
-    
-    # Playlist & Streaming
-    ".m3u", ".pls", ".asx"
-}
 
 # File tab UI
 def refresh_files(search_query=None):
