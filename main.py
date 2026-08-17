@@ -763,7 +763,7 @@ def show_preview(path):
         except:
             pass
 
-    # --- SVG Preview (Zero dependencies! Handled by tkinterweb) ---
+    # --- SVG Preview (Zero dependencies! Only tkinterweb) ---
     if ext == ".svg":
         try:
             html_view = HtmlFrame(preview_frame)
@@ -773,7 +773,7 @@ def show_preview(path):
         except Exception as e:
             print(f"SVG Preview error: {e}")
 
-    # --- PDF Preview (PyMuPDF grabs page 1 and passes to PIL) ---
+    # --- PDF Preview (PyMuPDF, only page 1) ---
     if ext == ".pdf":
         try:
             doc = pymupdf.open(path)
@@ -825,9 +825,16 @@ def show_preview(path):
             close_btn.configure(command=stop_audio)
             return
         except Exception as e:
-            print(f"Audio Preview error: {e}")
+            lbl = tk.Label(
+                preview_frame,
+                text=f"Audio Preview error: {e}",
+                bg=CURRENT_BG,
+                fg=fg,
+                font=("TkDefaultFont", 12),
+            )
+            lbl.pack(pady=50)
 
-    # --- Video Preview with Perfect Audio Sync ---
+    # --- Video Preview (using cv2!) ---
     video_exts = [".mp4", ".avi", ".mov", ".ogv"]
     if ext in video_exts:
         try:
@@ -843,7 +850,14 @@ def show_preview(path):
                 pygame.mixer.music.play()
                 audio_loaded = True
             except pygame.error:
-                print("Pygame could not decode the audio track for this video format.")
+                lbl = tk.Label(
+                    preview_frame,
+                    text=f"Pygame could not decode the audio track for this video format. Try a different video extension.",
+                    bg=CURRENT_BG,
+                    fg=fg,
+                    font=("TkDefaultFont", 12),
+                )
+                lbl.pack(pady=50)
 
             def stream():
                 if not preview_frame.winfo_exists():
@@ -893,7 +907,14 @@ def show_preview(path):
             stream()
             return
         except Exception as e:
-            print(f"Video Preview error: {e}")
+            lbl = tk.Label(
+                preview_frame,
+                text=f"Video Preview error: {e}",
+                bg=CURRENT_BG,
+                fg=fg,
+                font=("TkDefaultFont", 12),
+            )
+            lbl.pack(pady=50)
             
     if ext in [".m3u", ".m3u8"]:
         try:
@@ -1041,7 +1062,14 @@ def show_preview(path):
                             return
                             
                         except Exception as e:
-                            print(f"Failed to process YouTube stream: {e}")
+                            lbl = tk.Label(
+                                preview_frame,
+                                text=f"Youtube Preview error: {e}",
+                                bg=CURRENT_BG,
+                                fg=fg,
+                                font=("TkDefaultFont", 12),
+                            )
+                            lbl.pack(pady=50)
                             
                     # Normal local file fallback
                     if not os.path.isabs(target) and not target.startswith("http"):
@@ -1052,7 +1080,14 @@ def show_preview(path):
             return
             
         except Exception as e:
-            print(f"M3U Preview error: {e}")
+            lbl = tk.Label(
+                preview_frame,
+                text=f"M3U Preview error: {e}",
+                bg=CURRENT_BG,
+                fg=fg,
+                font=("TkDefaultFont", 12),
+            )
+            lbl.pack(pady=50)
 
     # --- HTML preview ---
     if ext in [".html", ".htm", ".xhtml"]:
