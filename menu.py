@@ -1340,18 +1340,6 @@ def load_plugins():
                     f"Plugin failed during register:\n{e}"
                 )
 
-# Its its own function to format it better
-def get_storage_usage():
-    try:
-        result = subprocess.check_output("df -h /", shell=True).decode().splitlines()[1]
-        parts = result.split()
-        size = parts[1]      # total
-        used = parts[2]      # used
-        percent = parts[4]   # e.g. "41%"
-        return f"{used} used / {size} total ({percent})"
-    except Exception as e:
-        return f"Error: {e}"
-
 # -------------------------------
 #  Button Tabs
 # -------------------------------
