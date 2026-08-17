@@ -41,7 +41,7 @@ Extract the files anywhere you want.
 
 ## How To Run It
 
-If this is your first time running it, type the commnad below, wait for 3 minutes, and then press Ctrl-C. Then, run it again.
+If this is your first time running it, type the command below, wait for 3 minutes, and then press Ctrl-C. Then, run it again.
 
 Go to your terminal, and type the following:\
 `python3 /place/where/you/downloaded/it/menu.py`
