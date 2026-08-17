@@ -1761,7 +1761,7 @@ def open_file(p):
     ext = os.path.splitext(p)[1].lower()
 
     # Python files -> Thonny
-    if ext == ".py":
+    if ext == ".py":  # It's kinda biased
         subprocess.Popen(["thonny", p])
         return
 
@@ -1836,7 +1836,7 @@ def run_file(p):
         return
 
     # Fallback
-    subprocess.Popen(["xdg-open", p])
+    subprocess.Popen(["xdg-open", p])  # Should probably do just this but idc
 
 
 def show_file_menu(event, path, is_exec):
@@ -1968,6 +1968,7 @@ def refresh_files(search_query=None, up=False):
 
     # File list
     try:
+        # JIC someone is stupid (like me) and appends ../ to a filepath
         if search_query == "../":
             path_var.set(os.path.abspath(path_var.get() + "/../"))
             refresh_files()
@@ -1981,7 +1982,7 @@ def refresh_files(search_query=None, up=False):
         if search_query:
             files = fuzzy_match(search_query.lower(), files)
 
-    except Exception:
+    except Exception:  # Probably not the best to use a bare Exception, but i can't be bothered to find the right one
         tk.Label(left_frame, text="Invalid path", bg=CURRENT_BG, fg=fg).pack()
         return
 
@@ -2014,7 +2015,7 @@ def refresh_files(search_query=None, up=False):
                 icon = icons["audio"]
             elif os.access(full, os.X_OK) or ext == ".desktop":
                 icon = icons["exec"]
-            else:
+            else:  # imagine having a generic file
                 icon = icons["file"]
 
         # Label with icon + filename
@@ -2026,7 +2027,7 @@ def refresh_files(search_query=None, up=False):
 
         label = tk.Label(
             item_container,
-            text=f"  {f}",
+            text=f"  {f}",  # ff
             image=icon,
             compound="left",
             bg=CURRENT_BG,
@@ -2151,7 +2152,7 @@ def update_dashboard():
     except Exception:
         disk = "N/A"
 
-    # IP
+    # IP (just don't run this live on stream. i have made that mistake before)
     try:
         ip = (
             subprocess.check_output("hostname -I", shell=True).decode().strip()
@@ -2165,11 +2166,13 @@ def update_dashboard():
 
     # Color-code based on Fahrenheit
     if fahrenheit < 110:
-        temp_color = "#4CAF50"  # green
+        temp_color = "#4CAF50"  # green (fine ig)
     elif fahrenheit < 140:
-        temp_color = "#FFC107"  # yellow
+        temp_color = "#FFC107"  # yellow (lay off the subprocesses)
     else:
-        temp_color = "#F44336"  # red
+        temp_color = (
+            "#F44336"  # red (stop running doom the dark ages on your arduino)
+        )
 
     def add_row(label, value, color=None):
         frame = tk.Frame(dash, bg=CURRENT_BG)
@@ -2202,7 +2205,7 @@ def update_dashboard():
 update_dashboard()
 
 # -------------------------------
-#  Favorites
+#  Favorites (if anyone really gets into this control panel)
 # -------------------------------
 
 items = []
@@ -2607,6 +2610,7 @@ def switch_tab(offset):
 
 
 # For that ease of use switching he heh
+# It's just too much of a habit to deny
 root.bind("<Control-Tab>", lambda e: switch_tab(1))
 root.bind("<Control-Shift-Tab>", lambda e: switch_tab(-1))
 
@@ -2762,7 +2766,7 @@ PLUGINS_READY = True
 inject_plugin_widgets()
 
 # -------------------------------
-#  Scheduler
+#  Scheduler (because everyone needs a little organization)
 # -------------------------------
 
 scheduled_tasks: list[dict] = []
@@ -2926,10 +2930,11 @@ def highlight(text, query):
     end = start + len(query)
     return (
         text[:start] + "**" + text[start:end] + "**" + text[end:]
-    )  # Listen this is not to try to markdonw the buttons the ** is intentional!
+    )  # Listen this is not to try to markdown the buttons the ** is intentional! Leave me alone!
 
 
 # --- Logic ---
+# 123 lines! Yay!
 def do_search(*args):
     query = search_var.get().strip().lower()
     clear_search_results()
@@ -2937,12 +2942,12 @@ def do_search(*args):
     fg = "#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000"
     results_container.configure(bg=CURRENT_BG)
 
-    # al ittle bit of easte r eg gs spac ed out so no ct rl f ing them
+    # eaaster egger!
     if query == "steamy noodle bowl":
         print("HOW TF DID YOU KNOW?")
 
     if query == "a website?":
-        print("Yes, thesteamynoodlebowl.netlify.app")
+        print("Yes. Go away now.")
 
     # Show history when no current search
     if not query:
@@ -3014,7 +3019,7 @@ def do_search(*args):
 
         return os.path.dirname(p)
 
-    # Files (non-recursive for now)
+    # Files (non-recursive for now, recursive will blow anyone's computer)
     for f in os.listdir(path_var.get()):
         sources.append(
             {
