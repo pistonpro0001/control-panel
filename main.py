@@ -2038,7 +2038,7 @@ def refresh_files(search_query=None, up=False):
             continue
 
         # -----------------------------
-        # RUN BUTTON (only when valid)
+        # RUN BUTTON (sometimes)
         # -----------------------------
         is_exec = (
             os.access(full, os.X_OK)
@@ -2052,7 +2052,7 @@ def refresh_files(search_query=None, up=False):
             ).pack(side="right")
 
         # -----------------------------
-        # OPEN BUTTON (always there)
+        # OPEN BUTTON (always)
         # -----------------------------
 
         ttk.Button(
@@ -2117,7 +2117,7 @@ def update_dashboard():
     except Exception:
         disk = "N/A"
 
-    # IP (just don't run this live on stream. i have made that mistake before)
+    # IP (just don't run this live on stream. i have made a similar mistake)
     try:
         ip = (
             subprocess.check_output("hostname -I", shell=True).decode().strip()
@@ -2274,7 +2274,7 @@ def load_plugins():
             except Exception as e:
                 show_popup(
                     f"Plugin Load Error: {module_name}",
-                    f"Plugin failed during register:\n{e}",
+                    f"Plugin failed:\n{e}",
                 )
 
 
@@ -2645,7 +2645,7 @@ def add_button_to_tab(tab_name, label, callback):
 
         menu.tk_popup(event.x_root, event.y_root)
 
-    # Attach right-click menu only for non-Favorites tabs
+    # Attach right-click menu
     if tab_name != "Favorites":
         btn.bind("<Button-3>", show_fav_menu)
 
@@ -2676,7 +2676,6 @@ def refresh_favorites():
             else:
                 run_inline_with_popup(it["name"], it["command"], it["kind"])
 
-        # Simple button — NO right-click menu
         btn = ttk.Button(frame, text=it["name"], command=run)
         btn.pack(fill="x")
 
@@ -3078,7 +3077,6 @@ def do_search(*args):
             display = highlight(to_match, query)
 
             def run_and_record(it=it):
-                # Save history
                 if query not in search_history:
                     search_history.append(query)
                     if len(search_history) > MAX_HISTORY:
@@ -3102,18 +3100,14 @@ def do_search(*args):
                         pass
 
                 # Execute
-                # Safely extract the potential command
                 if isinstance(it.get("name"), dict):
-                    # For nested 'Command' type items
                     cmd = it.get("name", {}).get("action")
                 else:
-                    # For flat 'Tab' or 'File' type items
                     if "command" in it:
                         cmd = it.get("command")
                     else:
                         cmd = it.get("action")
 
-                # Check if it's a function before calling it
                 if callable(cmd):
                     cmd()
                 else:
@@ -3129,7 +3123,7 @@ def do_search(*args):
 search_entry.bind(
     "<Escape>",
     lambda e: (search_var.set(""), clear_search_results(), do_search()),
-)  # Clear and reset
+)  # Clear
 
 search_var.trace_add("write", do_search)
 
