@@ -14,10 +14,10 @@ from mutagen import File
 import io
 import pyperclip
 
-HOME_DIR = os.getcwd() + "/"
+HOME_DIR = os.path.dirname(os.path.abspath(__file__)) + "/"
 print(HOME_DIR)
 THEME_FILE = HOME_DIR + ".controlpanel_theme"
-PLUGIN_DIR = HOME_DIR + ".controlpanel_plugins" 
+PLUGIN_DIR = HOE_DIR + ".controlpanel_plugins" 
 RSS_FEED = HOME_DIR + ".controlpanel_rssfeed"
 SEARCH_HISTORY_FILE = HOME_DIR + ".controlpanel_search_history"
 FAVORITES_FILE = HOME_DIR + ".controlpanel_favorites.json"
