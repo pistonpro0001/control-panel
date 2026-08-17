@@ -901,11 +901,6 @@ def open_file(p):
         subprocess.Popen(["mousepad", p])
         return
 
-    # Desktop launchers -> open normally
-    if ext == ".desktop":
-        subprocess.Popen(["xdg-open", p])
-        return
-
     # Everything else -> default handler
     subprocess.Popen(["xdg-open", p])
 
@@ -949,11 +944,6 @@ def paste_file():
 
 def run_file(p):
     ext = os.path.splitext(p)[1].lower()
-
-    # Desktop launchers
-    if ext == ".desktop":
-        subprocess.Popen(["xdg-open", p])
-        return
 
     # Shell scripts
     if ext == ".sh":
@@ -1153,11 +1143,6 @@ def refresh_files(search_query=None):
             # Text-based files -> mousepad
             if ext in TEXT_EXTS:
                 subprocess.Popen(["mousepad", p])
-                return
-
-            # Desktop launchers -> open normally
-            if ext == ".desktop":
-                subprocess.Popen(["xdg-open", p])
                 return
 
             # Everything else -> default handler
