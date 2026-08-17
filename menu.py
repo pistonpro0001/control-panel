@@ -12,16 +12,15 @@ import shutil
 import psutil
 from mutagen import File
 import io
-from news import show_news
-from weather import get_weather
-from get_email import fetch_latest_emails as get_emails
 import pyperclip
 
-THEME_FILE = "/home/pi/.controlpanel_theme"
-PLUGIN_DIR = "/home/pi/.controlpanel_plugins" 
-RSS_FEED = "/home/pi/.controlpanel_rssfeed"
-SEARCH_HISTORY_FILE = "/home/pi/.controlpanel_search_history"
-FAVORITES_FILE = "/home/pi/.controlpanel_favorites.json"
+HOME_DIR = os.getcwd() + "/"
+print(HOME_DIR)
+THEME_FILE = HOME_DIR + ".controlpanel_theme"
+PLUGIN_DIR = HOME_DIR + ".controlpanel_plugins" 
+RSS_FEED = HOME_DIR + ".controlpanel_rssfeed"
+SEARCH_HISTORY_FILE = HOME_DIR + ".controlpanel_search_history"
+FAVORITES_FILE = HOME_DIR + ".controlpanel_favorites.json"
 CURRENT_BG = "#FFFFFF"
 os.makedirs(PLUGIN_DIR, exist_ok=True)
 
@@ -250,7 +249,7 @@ root.geometry("1050x540")   # <--- widened window
 root.resizable(False, False)
 root.attributes('-topmost', True)
 
-ICON_PATH = "/home/pi/Pictures/"
+ICON_PATH = HOME_DIR + "icons/"
 ICON_SIZE = (24, 24)
     
 def load_icon(name):
@@ -270,8 +269,8 @@ apply_theme()
 notebook = ttk.Notebook(root, style="CustomNotebook.TNotebook")
 notebook.pack(fill="both", expand=True)
 
-tab_names = ["Dashboard", "System", "Bullitin", "Developer", "Plugins", "Tasks",
-             "Network", "Maintenance", "Visual", "Music", "Files", "Favorites",
+tab_names = ["Dashboard", "System", "Developer", "Plugins", "Tasks",
+             "Network", "Maintenance", "Visual", "Files", "Favorites",
              "Scheduler", "Clipboard", "Search", "Settings"]
 
 dash_interval = tk.IntVar(value=5)
@@ -1240,18 +1239,13 @@ def get_storage_usage():
     except Exception as e:
         return f"Error: {e}"
 
-add_section(tabs["Music"], "Music Tools")
 add_section(tabs["Scheduler"], "Schedule Events")
 add_section(tabs["Search"], "System Search")
 
 # --- System ---
 add_section(tabs["System"], "System Commands")
-add_script_item("System", "Startup", "/home/pi/Documents/Startup.sh")
-add_script_item("System", "Start Background", "/home/pi/Documents/bg.sh")
-add_script_item("System", "Stop Background", "/home/pi/Documents/kill_gif_wallpaper.sh")
 add_inline_item("System", "Reboot", "sudo reboot", kind="action")
 add_inline_item("System", "Shutdown", "sudo shutdown now", kind="action")
-add_inline_item("System", "Chromium", "chromium", kind="action")
 
 # --- Developer ---
 add_section(tabs["Developer"], "Developer Tools")
@@ -1279,8 +1273,6 @@ add_inline_item("Maintenance", "Clean Packages",
 
 # --- Visual ---
 add_section(tabs["Visual"], "Visual & UI Tools")
-add_script_item("Visual", "Start Picom", "/home/pi/Documents/start_picom.sh")
-add_script_item("Visual", "Open Pet", "/home/pi/Documents/pet.sh")
 add_inline_item("Visual", "Open File Manager", "pcmanfm", kind="action")
 add_inline_item("Visual", "Open Terminal", "lxterminal", kind="action")
 add_inline_item("Visual", "Restart Panel", "lxpanelctl restart", kind="action")
@@ -1320,143 +1312,6 @@ def update_clipboard():
     clipboard_tab.after(1000, update_clipboard)
     
 update_clipboard()
-
-# --- Bullitin ---
-bullitin = tabs["Bullitin"]
-
-emails = get_emails(count=2)
-
-def update_bullitin():
-    for child in bullitin.winfo_children():
-        child.destroy()
-        
-    wth = get_weather()
-    
-    ttk.Button(bullitin, text="News",
-           command=lambda: show_news(feed_url.get())).pack(pady=5)
-    
-    ttk.Label(bullitin, text="\n").pack(pady=(10, 0))
-    ttk.Label(bullitin, text=f"Temperature: {wth['temperature']}").pack(pady=(10, 0))
-    ttk.Label(bullitin, text=f"Wind Speed: {wth['wind_speed']}").pack(pady=(10, 0))
-    ttk.Label(bullitin, text=f"Wind Direction: {wth['wind_dir']}").pack(pady=(10, 0))
-    ttk.Label(bullitin, text=f"Condition: {wth['condition']}").pack(pady=(10, 0))
-    ttk.Label(bullitin, text="\n").pack(pady=(10, 0))
-    
-    for i, (sender, subject) in enumerate(emails, 1):
-        ttk.Label(bullitin, text=f"{i}. From: {sender}\n       Subject: {subject}\n").pack(pady=(10, 0))
-    
-    bullitin.after(5000, update_bullitin)
-    
-root.after(1000, update_bullitin())
-
-# --- Music ---
-add_script_item("Music", "Start Music", "/home/pi/Music/start_music.sh")
-music_tab = tabs["Music"]
-
-def set_volume(val):
-    with open("/home/pi/.taskbar_volume", "r") as f:
-        c = f.readlines()[0].strip()
-        control = False if c == "t" else True
-        
-    if control:
-        subprocess.Popen(["pactl", "set-sink-volume", "@DEFAULT_SINK@", f"{val}%"])
-
-def next_track():
-    subprocess.Popen(["mpc", "next"])
-
-def prev_track():
-    subprocess.Popen(["mpc", "prev"])
-
-def pause_play():
-    subprocess.Popen(["mpc", "toggle"])
-    
-def send_music_command(cmd):
-    with open("/home/pi/Music/music_cmd", "w") as f:
-        f.write(cmd)
-        
-current_track_var = tk.StringVar(value="Loading...")
-    
-def update_current_track():
-    try:
-        with open("/home/pi/Music/current_track.txt", "r") as f:
-            name = f.read().strip()
-    except:
-        name = ""
-        
-    current_track_var.set(name)
-
-# Label
-ttk.Label(music_tab, text="Current Track:").pack(pady=(10, 0))
-ttk.Label(music_tab, textvariable=current_track_var,
-          font=("TkDefaultFont", 12, "bold")).pack(pady=(0, 10))
-
-# Start updating
-update_current_track()
-
-progress_var = tk.DoubleVar()
-progress_bar = ttk.Progressbar(music_tab, variable=progress_var, maximum=1.0)
-progress_bar.pack(fill="x", padx=20, pady=10)
-
-time_label = ttk.Label(music_tab, text="0:00 / 0:00")
-time_label.pack()
-
-last_progress = 0.0
-
-def update_progress():
-    global last_progress
-    try:
-        with open("/home/pi/Music/current_time.txt") as f:
-            both = f.readlines()
-            pos = int(both[0].strip()) / 1000
-            length = float(both[1])
-
-        target = pos / length if length > 0 else 0
-        
-        smooth = last_progress + (target - last_progress) * .2
-        last_progress = smooth
-        
-        progress_var.set(smooth)
-
-        # Format time
-        elapsed = time.strftime("%M:%S", time.gmtime(pos))
-        total = time.strftime("%M:%S", time.gmtime(length))
-        time_label.config(text=f"{elapsed} / {total}")
-        
-        update_current_track()
-
-    except:
-        pass
-
-    music_tab.after(300, update_progress)
-
-update_progress()
-
-# Volume slider
-vol_label = ttk.Label(music_tab, text="Volume")
-vol_label.pack(pady=5)
-
-vol_slider = ttk.Scale(music_tab, from_=0, to=100, orient="horizontal",
-                       command=set_volume)
-vol_slider.set(70)
-vol_slider.pack(fill="x", padx=20)
-
-# Playback controls
-btn_frame = tk.Frame(music_tab, bg=CURRENT_BG)
-btn_frame.pack(pady=10)
-
-music_tab = tabs["Music"]
-
-ttk.Button(music_tab, text="Pause",
-           command=lambda: send_music_command("pause")).pack(pady=5)
-
-ttk.Button(music_tab, text="Resume",
-           command=lambda: send_music_command("resume")).pack(pady=5)
-
-ttk.Button(music_tab, text="Next Track",
-           command=lambda: send_music_command("next")).pack(pady=5)
-
-ttk.Button(music_tab, text="Stop Music",
-           command=lambda: send_music_command("stop")).pack(pady=5)
 
 # ============================
 # COMMAND PALETTE DICTIONARY

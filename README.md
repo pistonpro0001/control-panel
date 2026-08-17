@@ -39,49 +39,13 @@ Install: `sudo apt install mousepad thonny python3-tk`
 To download the code, click on the Code dropdown and then click Download Zip.\
 Extract the files anywhere you want.
 
-Some systems (Debian/Ubuntu/Raspberry Pi OS with a non‑`pi` user) require updating the hardcoded paths.
+## How To Run It
 
-Open `menu.py` in any text editor, and look and the global variables:\
-`
-THEME_FILE
-PLUGIN_DIR
-RSS_FEED
-SEARCH_HISTORY_FILE
-FAVORITES_FILE
-`
+If this is your first time running it, type the commnad below, wait for 3 minutes, and then press Ctrl-C. Then, run it again.
 
-Change `/home/pi/` to your actual home directory, for example:\
-`/home/yourusername/`\
-Save and exit.
+Go to your terminal, and type the following:\
+`python3 /place/where/you/downloaded/it/menu.py`
 
-Now, go to the location you set for `THEME_FILE` and create a file named exactly:\
-`.controlpanel_theme`
-
-Open it in a text editor, and put either `light` or `dark`.
-
-### Email Setup
-If you want to be able to read your emails through the panel, here's how to do it:
-
-First, open up get_email.py.\
-Near the very top, you'll see a section like\
-`with open('/home/pi/pass.json, 'r') as f:`
-
-Edit the `/home/pi/` to be your home directory.\
-Save, then exit.
-
-Go to your home directory, and create a file named pass.json.\
-Open it, and put the following:
-
-`
-{
-"mail":"your_email@gmail.com",
-"app_pas":"your_app_password"
-}
-`
-
-If you don't have an app password, click [here.](https://support.google.com/mail/answer/185833?hl=en)
-
-Save and close it.
 ## Final Notes
 With the setup complete, the Control Panel is ready to become _your_ system dashboard. Everything—from themes to plugins to file handling—is designed to be edited, extended, and experimented with.
 v1 is just the foundation. More features, polish, and customization options will come as the project grows. If you build something cool or find a way to improve the experience, contributions are always welcome.
