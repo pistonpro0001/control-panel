@@ -276,7 +276,6 @@ root = tk.Tk()
 root.title("Command Center")
 root.geometry("1050x540")   # <--- widened window
 root.resizable(False, False)
-root.attributes('-topmost', True)
 
 ICON_PATH = HOME_DIR + "icons/"
 ICON_SIZE = (24, 24)
@@ -1860,13 +1859,15 @@ def do_search(*args):
     sources = []
 
     # 1. Commands
-    for name in COMMANDS:
+    for cmd in COMMANDS:
         sources.append({
-            "name": name,
+            "name": cmd["name"],
             "tab": "Commands",
             "type": "command",
-            "command": COMMANDS[COMMANDS.index(name)]
+            "command": cmd["action"],
+            "description": cmd["description"]
         })
+
 
     # 2. Tabs
     for tab_name in tabs:
@@ -2006,7 +2007,7 @@ def do_search(*args):
 
             ttk.Button(outer, text=display, command=run_and_record).pack(fill="x")
 
-search_entry.bind("<Escape>", lambda e: (clear_search(), do_search())) # Clear and reset
+search_entry.bind("<Escape>", lambda e: (search_var.set(""), clear_search_results, do_search())) # Clear and reset
 
 search_var.trace_add("write", do_search)
 
