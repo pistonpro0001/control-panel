@@ -2,6 +2,19 @@
 
 This is the code to have full control of your system, in a sleek and stylish manner! Made entirely in Python 3.
 
+# Features
+- Dashboard to monitor system
+- Simple system commands
+- Plugin support
+- Task manager
+- Network and Visual tools
+- File manager
+- Favorites support
+- Scheduling commands
+- Visual clipboard
+- System-wide search
+- Theme and fuzzy search support
+
 ## Supported Systems
 V1 is very limited so far, so here are the requirements:
 
@@ -24,7 +37,7 @@ Next, head to your terminal to install the dependencies.
 
 ### Installation
 All of the python modules you need can be installed with one command:\
-`pip install requests urllib3 feedparser beautifulsoup4 Pillow ftfy psutil mutagen pyperclip`\
+`pip install Pillow psutil pyperclip`\
 This installs all of the python requirements that allows it to function.
 
 Next, you need to install a certain text editor and python editor (used by the Files tab)
