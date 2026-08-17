@@ -112,19 +112,19 @@ You can create or modify plugins to extend functionality.
 
 # 🚀 Project Status
 
-This is **v1**.
+This is **v1** (not including extra updates).
 
 The goal is to expand with:
 
 * Better performance
 * Improved UI/UX
-* Cross-environment compatibility
+* Cross-environment compatibility (hopefully with windows)
 
 ---
 
 # 💬 Final Thoughts
 
-This project has been in development for about 6 months and is built to be explored, modified, and extended.
+This project has been in development for about 6 months and is made to be explored, modified, and extended.
 
 If you build something cool or improve the experience, contributions are welcome.
 
