@@ -18,10 +18,7 @@ sudo apt install -y \
 echo "---- installing python packages ----"
 pip3 install --upgrade pip
 
-pip3 install \
-    pillow \
-    psutil \
-    pyperclip
+pip3 install -r requirements.txt
 
 echo "----instaling clipboard support ----"
 sudo apt install -y xclip xsel 2>/dev/null
