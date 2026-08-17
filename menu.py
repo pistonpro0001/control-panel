@@ -288,8 +288,10 @@ def run_script_with_popup(name, path):
 root = tk.Tk()
 root.title("Command Center")
 root.geometry("1050x540")
-root.resizable(False, False)
+root.resizable(False, True)
 
+
+# Setup icons
 ICON_PATH = HOME_DIR + "icons/"
 ICON_SIZE = (24, 24)
     
@@ -301,6 +303,7 @@ def load_icon(name):
         print("Something went wrong loading the icons. Check that they exist (in the icons/ folder).")
         sys.exit(0)
 
+# Load the icons
 icons = {"folder": load_icon("folder.png"), "file": load_icon("file.png"), "script": load_icon("script.png"), "image": load_icon("image.png"), "exec": load_icon("exec.png"), "video": load_icon("video.png"), "audio": load_icon("audio.png")}
 
 style = ttk.Style()
