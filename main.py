@@ -40,7 +40,9 @@ import pyperclip
 # Global path variables
 
 HOME_DIR = os.path.dirname(os.path.abspath(__file__)) + "/"
-BASE_DIR = os.path.expanduser("~")
+BASE_DIR = os.environ.get('SUDO_USER_HOME') or \
+           (f"/home/{os.environ.get('SUDO_USER')}" if os.environ.get('SUDO_USER') else None) or \
+           os.path.expanduser("~")
 THEME_FILE = HOME_DIR + ".controlpanel_theme"
 PLUGIN_DIR = HOME_DIR + ".controlpanel_plugins"
 SEARCH_HISTORY_FILE = HOME_DIR + ".controlpanel_search_history"
