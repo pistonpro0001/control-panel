@@ -610,7 +610,7 @@ def register(api):
         value_label.pack(anchor="w")
 
         #Keep this in your code, put main loop in it or leave it empty 
-        #Keep .after()
+        #Keep .after(), though you can change the timing
         def update():
             #Do whatever you want
             from time import time
