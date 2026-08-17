@@ -49,7 +49,11 @@ import pygame
 HOME_DIR = os.path.dirname(os.path.abspath(__file__)) + "/"
 BASE_DIR = (
     os.environ.get("SUDO_USER_HOME")
-    or (f"/home/{os.environ.get('SUDO_USER')}" if os.environ.get("SUDO_USER") else None)
+    or (
+        f"/home/{os.environ.get('SUDO_USER')}"
+        if os.environ.get("SUDO_USER")
+        else None
+    )
     or os.path.expanduser("~")
 )
 
@@ -68,7 +72,6 @@ pygame.mixer.init()
 
 
 class ToggleSwitch(tk.Canvas):
-
     def __init__(
         self,
         parent,
@@ -83,7 +86,11 @@ class ToggleSwitch(tk.Canvas):
     ):
 
         super().__init__(
-            parent, width=width, height=height, highlightthickness=0, bg=CURRENT_BG
+            parent,
+            width=width,
+            height=height,
+            highlightthickness=0,
+            bg=CURRENT_BG,
         )
 
         self.width = width
@@ -154,7 +161,9 @@ class ToggleSwitch(tk.Canvas):
             self.command(self.state)
 
         if self.theme:
-            self.after(500, os.execl(sys.executable, sys.executable, *sys.argv))
+            self.after(
+                500, os.execl(sys.executable, sys.executable, *sys.argv)
+            )
 
     def animate(self):
         target = self.width - self.radius if self.state else self.radius
@@ -221,13 +230,19 @@ def apply_theme():
 
     root.configure(bg=CURRENT_BG)
 
-    style.configure("TButton", background=CURRENT_BG, foreground=fg, borderwidth=0)
-
-    style.map(
-        "TButton", background=[("active", hover_bg)], foreground=[("active", hover_fg)]
+    style.configure(
+        "TButton", background=CURRENT_BG, foreground=fg, borderwidth=0
     )
 
-    style.configure("CustomNotebook.TNotebook", background=CURRENT_BG, borderwidth=0)
+    style.map(
+        "TButton",
+        background=[("active", hover_bg)],
+        foreground=[("active", hover_fg)],
+    )
+
+    style.configure(
+        "CustomNotebook.TNotebook", background=CURRENT_BG, borderwidth=0
+    )
 
     style.configure(
         "CustomNotebook.TNotebook.Tab", background=CURRENT_BG, foreground=fg
@@ -275,7 +290,9 @@ def show_popup(title, message):
     popup.title(title)
     popup.transient(root)
     popup.resizable(False, False)
-    popup.geometry("+%d+%d" % (root.winfo_rootx() + 60, root.winfo_rooty() + 60))
+    popup.geometry(
+        "+%d+%d" % (root.winfo_rootx() + 60, root.winfo_rooty() + 60)
+    )
     popup.configure(bg=CURRENT_BG)
 
     frame = tk.Frame(popup, bg=CURRENT_BG, padx=15, pady=15)
@@ -293,9 +310,13 @@ def show_popup(title, message):
                     if it["type"] == "script":
                         run_script_with_popup(it["name"], it["path"])
                     else:
-                        run_inline_with_popup(it["name"], it["command"], it["kind"])
+                        run_inline_with_popup(
+                            it["name"], it["command"], it["kind"]
+                        )
 
-        ttk.Button(frame, text="Run Again", command=run_again).pack(pady=(0, 10))
+        ttk.Button(frame, text="Run Again", command=run_again).pack(
+            pady=(0, 10)
+        )
 
     ttk.Button(frame, text="OK", command=popup.destroy).pack()
 
@@ -406,7 +427,11 @@ def add_section(parent, title):
     frame.pack(fill="x", pady=(15, 5))
 
     label = tk.Label(
-        frame, text=title, bg=CURRENT_BG, fg=fg, font=("TkDefaultFont", 12, "bold")
+        frame,
+        text=title,
+        bg=CURRENT_BG,
+        fg=fg,
+        font=("TkDefaultFont", 12, "bold"),
     )
     label.pack(anchor="w", padx=10)
 
@@ -488,7 +513,9 @@ def refresh_tasks_panel():
     header.pack(anchor="w", pady=(0, 5))
 
     processes = []
-    for proc in psutil.process_iter(["pid", "name", "cpu_percent", "memory_percent"]):
+    for proc in psutil.process_iter(
+        ["pid", "name", "cpu_percent", "memory_percent"]
+    ):
         try:
             processes.append(proc.info)
         except Exception:
@@ -622,7 +649,9 @@ def refresh_plugins():
                 add_button_to_tab(
                     it["tab"],
                     it["name"],
-                    lambda it=it: run_script_with_popup(it["name"], it["path"]),
+                    lambda it=it: run_script_with_popup(
+                        it["name"], it["path"]
+                    ),
                 )
             else:
                 add_button_to_tab(
@@ -699,7 +728,7 @@ def register(api):
     def draw_widget(parent):
         #Using parent as the root, design whatever widget you want
         #Example code:
-        
+
         #Make a new style using current theme
         s = ttk.Style()
         load_theme()
@@ -707,28 +736,28 @@ def register(api):
 
         #Make the frame using the style
         frame = ttk.Frame(parent, style='Widget.TFrame')
-        frame.pack(fill="x", padx=20, pady=10) 
-        
+        frame.pack(fill="x", padx=20, pady=10)
+
         #Add labels
         ttk.Label(frame, text="Example Widget", font=("TkDefaultFont", 12, "bold"), style='RamUsage.TLabel').pack(anchor="w")
         value_label = ttk.Label(frame, text="Loading...", style='Widget.TLabel')
         value_label.pack(anchor="w")
 
-        #Keep this in your code, put main loop in it or leave it empty 
+        #Keep this in your code, put main loop in it or leave it empty
         #Keep .after(), though you can change the timing
         def update():
             #Do whatever you want
             from time import time
-            
+
             value_label.config(text=str(time()))
 
             #Update widget
             frame.after(1000, update)
-        
+
         #This code needs to be kept as well
         update()
         return frame
-    
+
     #Add widget to whatever tab you want, replace 'System' with either:
     #Developer
     #Network
@@ -740,7 +769,9 @@ def register(api):
 
         refresh_plugins()
 
-    create_new_item(HOME_DIR + ".controlpanel_plugins", False, callback=write_template)
+    create_new_item(
+        HOME_DIR + ".controlpanel_plugins", False, callback=write_template
+    )
 
 
 # -------------------------------
@@ -783,9 +814,9 @@ def refresh_plugins_panel():
         command=lambda: (refresh_plugins(), refresh_plugins_panel()),
     ).pack(pady=20)
 
-    ttk.Button(plugins_tab, text="New Plugin", command=lambda: (new_plugin())).pack(
-        pady=20
-    )
+    ttk.Button(
+        plugins_tab, text="New Plugin", command=lambda: new_plugin()
+    ).pack(pady=20)
 
 
 refresh_plugins_panel()
@@ -937,7 +968,9 @@ def show_preview(path):
             lbl.pack(pady=10)
 
             cap = cv2.VideoCapture(path)
-            fps = cap.get(cv2.CAP_PROP_FPS)  # Get frames per second of the video
+            fps = cap.get(
+                cv2.CAP_PROP_FPS
+            )  # Get frames per second of the video
 
             audio_loaded = False
             try:
@@ -1092,8 +1125,12 @@ def show_preview(path):
 
                                     index = 0
                                     while True:
-                                        temp_video = f"{video_base}_{index}.mp4"
-                                        temp_audio = f"{audio_base}_{index}.wav"
+                                        temp_video = (
+                                            f"{video_base}_{index}.mp4"
+                                        )
+                                        temp_audio = (
+                                            f"{audio_base}_{index}.wav"
+                                        )
                                         if not os.path.exists(
                                             temp_video
                                         ) and not os.path.exists(temp_audio):
@@ -1147,7 +1184,9 @@ def show_preview(path):
                                         preview_frame.after(
                                             0,
                                             lambda: start_playback(
-                                                temp_video, temp_audio, label_widget
+                                                temp_video,
+                                                temp_audio,
+                                                label_widget,
                                             ),
                                         )
 
@@ -1155,11 +1194,15 @@ def show_preview(path):
                                     if preview_frame.winfo_exists():
                                         preview_frame.after(
                                             0,
-                                            lambda t=thread_err: handle_thread_error(t),
+                                            lambda t=thread_err: (
+                                                handle_thread_error(t)
+                                            ),
                                         )
 
                             # Media initialization and video looping
-                            def start_playback(temp_video, temp_audio, caching_lbl):
+                            def start_playback(
+                                temp_video, temp_audio, caching_lbl
+                            ):
                                 if caching_lbl.winfo_exists():
                                     caching_lbl.destroy()
 
@@ -1170,7 +1213,9 @@ def show_preview(path):
                                 pygame.mixer.music.load(temp_audio)
                                 pygame.mixer.music.play()
 
-                                play_lbl = tk.Label(preview_frame, bg=CURRENT_BG)
+                                play_lbl = tk.Label(
+                                    preview_frame, bg=CURRENT_BG
+                                )
                                 play_lbl.pack(pady=10)
 
                                 def stream():
@@ -1181,15 +1226,21 @@ def show_preview(path):
                                         cleanup(temp_video, temp_audio)
                                         return
 
-                                    current_millis = pygame.mixer.music.get_pos()
+                                    current_millis = (
+                                        pygame.mixer.music.get_pos()
+                                    )
                                     if current_millis < 0:
                                         loop_media()
                                         return
 
                                     fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
-                                    target_frame = int((current_millis / 1000.0) * fps)
+                                    target_frame = int(
+                                        (current_millis / 1000.0) * fps
+                                    )
 
-                                    current_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
+                                    current_frame = cap.get(
+                                        cv2.CAP_PROP_POS_FRAMES
+                                    )
                                     while current_frame < target_frame:
                                         if not cap.grab():
                                             break
@@ -1260,7 +1311,9 @@ def show_preview(path):
                                 close_btn.configure(command=clear_preview)
 
                             yt_thread = threading.Thread(
-                                target=run_yt_worker, args=(target, lbl), daemon=True
+                                target=run_yt_worker,
+                                args=(target, lbl),
+                                daemon=True,
                             )
                             yt_thread.start()
                             return
@@ -1270,7 +1323,9 @@ def show_preview(path):
                             return
 
                     # Normal local file fallback
-                    if not os.path.isabs(target) and not target.startswith("http"):
+                    if not os.path.isabs(target) and not target.startswith(
+                        "http"
+                    ):
                         target = os.path.join(os.path.dirname(path), target)
                     show_preview(target)
 
@@ -1372,9 +1427,9 @@ def show_preview(path):
             pass
 
     # --- Fallback ---
-    tk.Label(preview_frame, text="No preview available", bg=CURRENT_BG, fg=fg).pack(
-        pady=20
-    )
+    tk.Label(
+        preview_frame, text="No preview available", bg=CURRENT_BG, fg=fg
+    ).pack(pady=20)
 
 
 # Renaming
@@ -1386,7 +1441,9 @@ def rename_file(old_path):
 
     fg = "#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000"
 
-    tk.Label(popup, text="New name:", bg=CURRENT_BG, fg=fg).pack(padx=10, pady=10)
+    tk.Label(popup, text="New name:", bg=CURRENT_BG, fg=fg).pack(
+        padx=10, pady=10
+    )
     new_name_var = tk.StringVar(value=os.path.basename(old_path))
     entry = ttk.Entry(popup, textvariable=new_name_var)
     entry.pack(padx=10, pady=5)
@@ -1851,7 +1908,10 @@ def refresh_files(search_query=None):
         refresh_files()
 
     style.configure(
-        "My.TButton", foreground=fg, background=CURRENT_BG, font=("Helvetica", 12)
+        "My.TButton",
+        foreground=fg,
+        background=CURRENT_BG,
+        font=("Helvetica", 12),
     )
 
     ttk.Button(left_frame, text="Go", command=go).pack(pady=(0, 10))
@@ -1912,7 +1972,10 @@ def refresh_files(search_query=None):
         return
 
     files.sort(
-        key=lambda x: (not os.path.isdir(os.path.join(path_var.get(), x)), x.lower())
+        key=lambda x: (
+            not os.path.isdir(os.path.join(path_var.get(), x)),
+            x.lower(),
+        )
     )  # Sort files so that directories are first and alphabetically
     for f in files:
         full = os.path.join(path_var.get(), f)
@@ -1942,7 +2005,12 @@ def refresh_files(search_query=None):
 
         # Label with icon + filename
         label = tk.Label(
-            frame, text=f"  {f}", image=icon, compound="left", bg=CURRENT_BG, fg=fg
+            frame,
+            text=f"  {f}",
+            image=icon,
+            compound="left",
+            bg=CURRENT_BG,
+            fg=fg,
         )
         label.image = icon  # prevent garbage collection
         label.pack(side="left")
@@ -1989,19 +2057,22 @@ def refresh_files(search_query=None):
             or full.endswith(".py")
         )
         if is_exec:
-            ttk.Button(frame, text="Run", command=lambda p=full: run_file(p)).pack(
-                side="right"
-            )
+            ttk.Button(
+                frame, text="Run", command=lambda p=full: run_file(p)
+            ).pack(side="right")
 
         # -----------------------------
         # OPEN BUTTON (always there)
         # -----------------------------
 
-        ttk.Button(frame, text="Open", command=lambda p=full: open_file(p)).pack(
-            side="right"
-        )
+        ttk.Button(
+            frame, text="Open", command=lambda p=full: open_file(p)
+        ).pack(side="right")
 
-        label.bind("<Button-3>", lambda e, p=full, ex=is_exec: show_file_menu(e, p, ex))
+        label.bind(
+            "<Button-3>",
+            lambda e, p=full, ex=is_exec: show_file_menu(e, p, ex),
+        )
 
 
 refresh_files()
@@ -2038,19 +2109,29 @@ def update_dashboard():
 
     # Memory
     try:
-        mem = subprocess.check_output("free -h", shell=True).decode().splitlines()[1]
+        mem = (
+            subprocess.check_output("free -h", shell=True)
+            .decode()
+            .splitlines()[1]
+        )
     except Exception:
         mem = "N/A"
 
     # Disk
     try:
-        disk = subprocess.check_output("df -h /", shell=True).decode().splitlines()[1]
+        disk = (
+            subprocess.check_output("df -h /", shell=True)
+            .decode()
+            .splitlines()[1]
+        )
     except Exception:
         disk = "N/A"
 
     # IP
     try:
-        ip = subprocess.check_output("hostname -I", shell=True).decode().strip()
+        ip = (
+            subprocess.check_output("hostname -I", shell=True).decode().strip()
+        )
     except Exception:
         ip = "N/A"
 
@@ -2071,7 +2152,11 @@ def update_dashboard():
         frame.pack(fill="x", padx=20, pady=5)
 
         tk.Label(
-            frame, text=label, bg=CURRENT_BG, fg=fg, font=("TkDefaultFont", 12, "bold")
+            frame,
+            text=label,
+            bg=CURRENT_BG,
+            fg=fg,
+            font=("TkDefaultFont", 12, "bold"),
         ).pack(side="left")
 
         tk.Label(
@@ -2134,7 +2219,9 @@ load_favorites()
 
 
 def add_script_item(tab_name, label, path):
-    items.append({"name": label, "type": "script", "tab": tab_name, "path": path})
+    items.append(
+        {"name": label, "type": "script", "tab": tab_name, "path": path}
+    )
 
 
 def add_inline_item(tab_name, label, command, kind="info"):
@@ -2151,7 +2238,13 @@ def add_inline_item(tab_name, label, command, kind="info"):
 
 def add_script_item_plugin(tab_name, label, path):
     items.append(
-        {"name": label, "type": "script", "tab": tab_name, "path": path, "plugin": True}
+        {
+            "name": label,
+            "type": "script",
+            "tab": tab_name,
+            "path": path,
+            "plugin": True,
+        }
     )
 
 
@@ -2207,11 +2300,15 @@ add_inline_item("System", "Shutdown", "sudo shutdown now", kind="action")
 
 # --- Developer ---
 add_section(tabs["Developer"], "Developer Tools")
-add_inline_item("Developer", "Python Version", "python3 --version", kind="info")
+add_inline_item(
+    "Developer", "Python Version", "python3 --version", kind="info"
+)
 add_inline_item("Developer", "Pip Packages", "pip3 list", kind="info")
 add_inline_item("Developer", "Disk Usage", "df -h /", kind="info")
 add_inline_item("Developer", "Memory Usage", "free -h", kind="info")
-add_inline_item("Developer", "Display Server", "echo $XDG_SESSION_TYPE", kind="info")
+add_inline_item(
+    "Developer", "Display Server", "echo $XDG_SESSION_TYPE", kind="info"
+)
 
 # --- Network ---
 add_section(tabs["Network"], "Network Tools")
@@ -2327,7 +2424,10 @@ def register_builtin_commands():
     )
 
     register_command(
-        "Reboot", "System", "Restart the System", lambda: subprocess.Popen(["reboot"])
+        "Reboot",
+        "System",
+        "Restart the System",
+        lambda: subprocess.Popen(["reboot"]),
     )
 
     register_command(
@@ -2388,7 +2488,9 @@ def open_command_palette():
 
     style.configure("TEntry", padding=5, relief="flat")
     style.map(
-        "TEntry", background=[("active", CURRENT_BG)], foreground=[("active", fg)]
+        "TEntry",
+        background=[("active", CURRENT_BG)],
+        foreground=[("active", fg)],
     )
 
     # Search bar
@@ -2413,8 +2515,12 @@ def open_command_palette():
 
         # Fuzzy or normal search
         if FUZZY_ENABLED:
-            filtered = fuzzy_match(query.lower(), [cmd["name"] for cmd in COMMANDS])
-            filtered_cmds = [cmd for cmd in COMMANDS if cmd["name"] in filtered]
+            filtered = fuzzy_match(
+                query.lower(), [cmd["name"] for cmd in COMMANDS]
+            )
+            filtered_cmds = [
+                cmd for cmd in COMMANDS if cmd["name"] in filtered
+            ]
         else:
             filtered_cmds = [
                 cmd for cmd in COMMANDS if query.lower() in cmd["name"].lower()
@@ -2536,7 +2642,8 @@ def add_button_to_tab(tab_name, label, callback):
 
         if is_favorite(it):
             menu.add_command(
-                label="Remove from Favorites", command=lambda: remove_from_favorites(it)
+                label="Remove from Favorites",
+                command=lambda: remove_from_favorites(it),
             )
         else:
             menu.add_command(
@@ -2561,7 +2668,9 @@ def refresh_favorites():
     fg = "#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000"
 
     if not favorites:
-        tk.Label(tab, text="No favorites yet.", bg=CURRENT_BG, fg=fg).pack(pady=20)
+        tk.Label(tab, text="No favorites yet.", bg=CURRENT_BG, fg=fg).pack(
+            pady=20
+        )
         return
 
     for it in favorites:
@@ -2645,7 +2754,9 @@ def scheduler_loop():
                 if task["type"] == "script":
                     run_script_with_popup(task["name"], task["path"])
                 else:
-                    run_inline_with_popup(task["name"], task["command"], task["kind"])
+                    run_inline_with_popup(
+                        task["name"], task["command"], task["kind"]
+                    )
                 scheduled_tasks.remove(task)
                 refresh_task_list()
         time.sleep(1)
@@ -2662,7 +2773,10 @@ ttk.Label(sched_frame, text="Schedule a Command").pack(pady=10)
 command_names = [it["name"] for it in items]
 command_var = tk.StringVar()
 command_dropdown = ttk.Combobox(
-    sched_frame, textvariable=command_var, values=command_names, state="readonly"
+    sched_frame,
+    textvariable=command_var,
+    values=command_names,
+    state="readonly",
 )
 command_dropdown.pack(pady=5)
 
@@ -2685,7 +2799,10 @@ def refresh_task_list():
 
     if not scheduled_tasks:
         tk.Label(
-            scheduler_list_frame, text="No scheduled tasks.", bg=CURRENT_BG, fg=fg
+            scheduler_list_frame,
+            text="No scheduled tasks.",
+            bg=CURRENT_BG,
+            fg=fg,
         ).pack()
         return
 
@@ -2807,7 +2924,10 @@ def do_search(*args):
     if not query:
         if search_history:
             hist_label = tk.Label(
-                results_container, text="Recent Searches:", bg=CURRENT_BG, fg=fg
+                results_container,
+                text="Recent Searches:",
+                bg=CURRENT_BG,
+                fg=fg,
             )
             hist_label.pack(anchor="w", pady=(0, 5))
 
@@ -2921,7 +3041,11 @@ def do_search(*args):
             (
                 s
                 for s in sources
-                if (s["name"]["name"] if isinstance(s["name"], dict) else s["name"])
+                if (
+                    s["name"]["name"]
+                    if isinstance(s["name"], dict)
+                    else s["name"]
+                )
                 == m
             ),
             None,
@@ -2999,15 +3123,18 @@ def do_search(*args):
                 if callable(cmd):
                     cmd()
                 else:
-                    print(f"Error: No executable command found for {it.get('name')}")
+                    print(
+                        f"Error: No executable command found for {it.get('name')}"
+                    )
 
-            ttk.Button(outer, text=display, command=lambda: run_and_record()).pack(
-                fill="x"
-            )
+            ttk.Button(
+                outer, text=display, command=lambda: run_and_record()
+            ).pack(fill="x")
 
 
 search_entry.bind(
-    "<Escape>", lambda e: (search_var.set(""), clear_search_results(), do_search())
+    "<Escape>",
+    lambda e: (search_var.set(""), clear_search_results(), do_search()),
 )  # Clear and reset
 
 search_var.trace_add("write", do_search)
