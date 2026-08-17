@@ -1,4 +1,47 @@
 #!/usr/bin/env python3
+
+# ============================================================
+#  
+# ███████╗██╗██████╗░███████╗░█████╗░███████╗███╗░░██╗████████╗███████╗██████╗░
+# ██╔════╝██║██╔══██╗██╔════╝██╔══██╗██╔════╝████╗░██║╚══██╔══╝██╔════╝██╔══██╗
+# █████╗░░██║██████╔╝█████╗░░██║░░╚═╝█████╗░░██╔██╗██║░░░██║░░░█████╗░░██████╔╝
+# ██╔══╝░░██║██╔══██╗██╔══╝░░██║░░██╗██╔══╝░░██║╚████║░░░██║░░░██╔══╝░░██╔══██╗
+# ██║░░░░░██║██║░░██║███████╗╚█████╔╝███████╗██║░╚███║░░░██║░░░███████╗██║░░██║
+# ╚═╝░░░░░╚═╝╚═╝░░╚═╝╚══════╝░╚════╝░╚══════╝╚═╝░░╚══╝░░░╚═╝░░░╚══════╝╚═╝░░╚═╝
+#  Version: 1.7.3
+#  Author: Piston Pro
+#  Build: Raspberry Pi OS (LXDE)
+#  Description:
+#      Unified command center providing:
+#      - Dashboard
+#      - Task Manager
+#      - File Manager
+#      - Plugin Engine
+#      - Scheduler
+#      - Clipboard History
+#      - Command Palette
+#      - Search Engine
+#      - Theme Engine
+# ============================================================
+#  SYSTEM MAP (note this starts after these comments, not exactly right)
+#
+#  1–40     Globals & Paths
+#  41–150   ToggleSwitch Widget
+#  151–220  Theme Engine
+#  221–330  Popups & Command Execution
+#  331–420  GUI Setup
+#  421–520  Tasks Tab
+#  521–600  Settings Tab
+#  601–780  Plugins (API, Loader, Tools)
+#  781–1150 File Manager
+#  1151–1250 Dashboard
+#  1251–1350 Favorites
+#  1351–1500 Command Palette
+#  1501–1650 Scheduler
+#  1651–1850 Search Engine
+#  1851–end Main Loop
+# ============================================================
+
 import tkinter as tk
 from tkinter import ttk
 import subprocess
