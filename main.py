@@ -853,7 +853,7 @@ def clear_preview():
         preview_frame = None
 
 
-# Largest function by far! Around 450 lines!
+# Largest function by far! Around 450 lines! Not something to be proud of, but still!
 def show_preview(path):
     global preview_frame
     # Clear old preview
@@ -894,7 +894,7 @@ def show_preview(path):
         except Exception:
             pass
 
-    # --- SVG Preview (Zero dependencies! Only tkinterweb) ---
+    # --- SVG Preview (Zero dependencies! Only tkinterweb :) ) ---
     if ext == ".svg":
         try:
             html_view = HtmlFrame(preview_frame)
@@ -949,6 +949,7 @@ def show_preview(path):
             pygame.mixer.music.play()
 
             # Hijack the close button to kill background music on panel collapse
+            # I just love it when I build something only to realize that I need to monkey patch it later in the code
             def stop_audio():
                 pygame.mixer.music.stop()
                 clear_preview()
@@ -1049,6 +1050,7 @@ def show_preview(path):
             )
             lbl.pack(pady=50)
 
+    # --- m3u preview! Particularily proud of this one ---
     if ext in [".m3u", ".m3u8"]:
         try:
             with open(path, "r", encoding="utf-8") as f:
@@ -1097,7 +1099,7 @@ def show_preview(path):
             )
             listbox.pack(fill="both", expand=True, padx=10, pady=5)
 
-            # 💡 Insert the clean song titles into the visual list
+            # Insert the clean song titles into the visual list
             for title in song_titles:
                 listbox.insert(tk.END, title)
 
@@ -1184,7 +1186,7 @@ def show_preview(path):
                                         check=True,
                                     )
 
-                                    # Safe pass back to the Main Thread for playback initiation
+                                    # Safe pass back to main for playback initiation
                                     if preview_frame.winfo_exists():
                                         preview_frame.after(
                                             0,
@@ -1650,7 +1652,7 @@ TEXT_EXTS = {
     ".prefs",
     ".opts",
     # Dev Metadata
-    ".gitignore",
+    ".gitignore",  # echo "*" > .gitignore
     ".dockerignore",
     ".editorconfig",
 }
