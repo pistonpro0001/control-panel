@@ -980,16 +980,20 @@ def show_preview(path):
                             lbl.pack(pady=20)
                             preview_frame.update()
 
-                            # Set up paths directly in the Linux RAM-disk directory
-                            index = 0
-                            temp_video = "/tmp/firecenter_yt_video.mp4"
-                            temp_audio = "/tmp/firecenter_yt_audio.wav"
-                            while not os.path.exists(temp_video):
-                                temp_video = f"/tmp/firecenter_yt_video_{index}.mp4"
-                                temp_audio = f"/tmp/firecenter_yt_audio_{index}.wav"
-                                index += 1
+                            video_base = "/tmp/firecenter_yt_video"
+                            audio_base = "/tmp/firecenter_yt_audio"
 
-                            # Tell yt-dlp to download the video but avoid broken AV1 codecs
+                            index = 0
+                            while True:
+                                temp_video = f"{video_base}_{index}.mp4"
+                                temp_audio = f"{audio_base}_{index}.wav"
+                                if not os.path.exists(temp_video) and not os.path.exists(temp_audio):
+                                    break
+                                index += 1
+                                if index > 1000:  # Emergency safety exit
+                                    raise IOError("Could not allocate a free temporary file slot in /tmp.")
+
+                            # Tell yt-dlp to download the video but avoid av1
                             subprocess.run(
                                 ["yt-dlp", "-f", "bestvideo[vcodec^=avc]+bestaudio/best[ext=mp4]", 
                                  "-o", temp_video, "--merge-output-format", "mp4", target],
