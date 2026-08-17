@@ -21,7 +21,7 @@ VENV_PYTHON="$DIR/.venv/bin/python"
 # 1. Update system and install system packages first (Requires Root)
 echo "Updating system and installing system packages..."
 sudo apt update && sudo apt full-upgrade -y
-sudo apt install -y dex python3-tk xdg-utils mousepad thonny xclip xsel build-essential libssl-dev libffi-dev || true
+sudo apt install -y dex python3-tk xdg-utils mousepad thonny xclip xsel build-essential libssl-dev libffi-dev ffmpeg || true
 
 # 2. Create and configure virtual environment as the standard user (No Sudo)
 echo "Creating venv..."
