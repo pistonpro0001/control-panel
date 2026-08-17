@@ -47,11 +47,12 @@ import pygame
 # Global path variables
 
 HOME_DIR = os.path.dirname(os.path.abspath(__file__)) + "/"
-BASE_DIR = (e
+BASE_DIR = (
     os.environ.get("SUDO_USER_HOME")
     or (f"/home/{os.environ.get('SUDO_USER')}" if os.environ.get("SUDO_USER") else None)
     or os.path.expanduser("~")
 )
+
 THEME_FILE = HOME_DIR + ".controlpanel_theme"
 PLUGIN_DIR = HOME_DIR + ".controlpanel_plugins"
 SEARCH_HISTORY_FILE = HOME_DIR + ".controlpanel_search_history"
@@ -1314,7 +1315,7 @@ def show_preview(path):
             txt.pack(fill="both", expand=True, padx=10, pady=10)
             return
         except Exception as e:
-            plbl = tk.Label(
+            lbl = tk.Label(
                 preview_frame,
                 text=f"XML Preview error: {e}",
                 bg=CURRENT_BG,
