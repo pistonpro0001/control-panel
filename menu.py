@@ -287,7 +287,7 @@ def load_icon(name):
     img = Image.open(ICON_PATH + name).resize(ICON_SIZE, Image.LANCZOS)
     return ImageTk.PhotoImage(img)
 
-icons = { "folder": load_icon("folder.png"), "file": load_icon("file.png"), "script": load_icon("script.png"), "image": load_icon("image.png"), "exec": load_icon("exec.png"), "video": load_icon("video.png") }
+icons = { "folder": load_icon("folder.png"), "file": load_icon("file.png"), "script": load_icon("script.png"), "image": load_icon("image.png"), "exec": load_icon("exec.png"), "video": load_icon("video.png"), "audio": load_icon("audio.png") }
 
 style = ttk.Style()
 
@@ -984,7 +984,24 @@ VIDEO_EXTS = {
     ".3gp", ".3g2", ".3gpp", ".3gpp2", ".rm", ".rmvb", ".amv", ".nsv",
     
     # Playlist & Streaming Descriptors
-    ".m3u8", ".ism", ".ismv", ".m3u"
+    ".m3u8", ".ism", ".ismv"
+}
+
+AUDIO_EXTS = {
+    # Common
+    ".mp3", ".m4a", ".aac", ".ogg", ".oga", ".wma", ".opus",
+    
+    # High-Fidelity
+    ".wav", ".flac", ".alac", ".aif", ".aiff", ".aifc", ".ape", ".pcm",
+    
+    # Professional & Logic
+    ".mid", ".midi", ".kar", ".rmi", ".ac3", ".dts", ".dtshd", ".thd",
+    
+    # Specialized & Legacy
+    ".amr", ".awb", ".gsm", ".ra", ".rm", ".mka", ".au", ".snd",
+    
+    # Playlist & Streaming
+    ".m3u", ".pls", ".asx"
 }
 
 # File tab UI
@@ -1069,6 +1086,8 @@ def refresh_files(search_query=None):
                 icon = icons["image"]
             elif ext in VIDEO_EXTS:
                 icon = icons["video"]
+            elif ext in AUDIO_EXTS:
+                icon = icons["audio"]
             elif os.access(full, os.X_OK) or ext == ".desktop":
                 icon = icons["exec"]
             else:
