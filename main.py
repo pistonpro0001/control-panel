@@ -1317,12 +1317,7 @@ def show_preview(path):
                                 err_lbl.pack(pady=50)
                                 close_btn.configure(command=clear_preview)
 
-                            yt_thread = threading.Thread(
-                                target=run_yt_worker,
-                                args=(target, lbl),
-                                daemon=True,
-                            )
-                            yt_thread.start()
+                            run_async(run_yt_worker, target, lbl)
                             return
 
                         except Exception as e:
@@ -2790,7 +2785,7 @@ def scheduler_loop():
         time.sleep(1)
 
 
-threading.Thread(target=scheduler_loop, daemon=True).start()
+run_async(scheduler_loop)
 
 # UI
 sched_frame = tabs["Scheduler"]
