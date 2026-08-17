@@ -1117,9 +1117,16 @@ def show_preview(path):
             txt.pack(fill="both", expand=True, padx=10, pady=10)
             return
         except Exception as e:
-            print(f"XML Preview error: {e}")
+            plbl = tk.Label(
+                preview_frame,
+                text=f"XML Preview error: {e}",
+                bg=CURRENT_BG,
+                fg=fg,
+                font=("TkDefaultFont", 12),
+            )
+            lbl.pack(pady=50)
 
-    # -- Markdown Support ---
+    # -- Markdown preview ---
     if ext == ".md":
         try:
             with open(path, "r", encoding="utf-8") as f:
