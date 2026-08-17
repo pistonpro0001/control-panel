@@ -8,9 +8,8 @@
 # ██╔══╝░░██║██╔══██╗██╔══╝░░██║░░██╗██╔══╝░░██║╚████║░░░██║░░░██╔══╝░░██╔══██╗
 # ██║░░░░░██║██║░░██║███████╗╚█████╔╝███████╗██║░╚███║░░░██║░░░███████╗██║░░██║
 # ╚═╝░░░░░╚═╝╚═╝░░╚═╝╚══════╝░╚════╝░╚══════╝╚═╝░░╚══╝░░░╚═╝░░░╚══════╝╚═╝░░╚═╝
-#  Version: 1.0.0
-#  Author: Piston Pro
-#  Build: Raspberry Pi OS (LXDE)
+#  Author: Thatcher Evans
+#  Build: Linux (with exceptions)
 #  Description:
 #      Command center that has:
 #      - Dashboard
@@ -209,7 +208,7 @@ def truncate_output(text, max_lines=30, max_chars=1000):
         truncated = True
 
     if truncated:
-        joined = joined.rstrip() + "\n...\n(output truncated)"
+        joined = joined.rstrip() + "\n... (output truncated)"
     return joined
 
 def show_popup(title, message):
