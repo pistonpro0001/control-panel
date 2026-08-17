@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # ============================================================
-# 
+#
 # ███████╗██╗██████╗░███████╗░█████╗░███████╗███╗░░██╗████████╗███████╗██████╗░
 # ██╔════╝██║██╔══██╗██╔════╝██╔══██╗██╔════╝████╗░██║╚══██╔══╝██╔════╝██╔══██╗
 # █████╗░░██║██████╔╝█████╗░░██║░░╚═╝█████╗░░██╔██╗██║░░░██║░░░█████╗░░██████╔╝
@@ -47,9 +47,11 @@ import pygame
 # Global path variables
 
 HOME_DIR = os.path.dirname(os.path.abspath(__file__)) + "/"
-BASE_DIR = os.environ.get('SUDO_USER_HOME') or \
-           (f"/home/{os.environ.get('SUDO_USER')}" if os.environ.get('SUDO_USER') else None) or \
-           os.path.expanduser("~")
+BASE_DIR = (
+    os.environ.get("SUDO_USER_HOME")
+    or (f"/home/{os.environ.get('SUDO_USER')}" if os.environ.get("SUDO_USER") else None)
+    or os.path.expanduser("~")
+)
 THEME_FILE = HOME_DIR + ".controlpanel_theme"
 PLUGIN_DIR = HOME_DIR + ".controlpanel_plugins"
 SEARCH_HISTORY_FILE = HOME_DIR + ".controlpanel_search_history"
@@ -63,14 +65,25 @@ pygame.mixer.init()
 #  Toggle Switch Widget
 # -------------------------------
 
+
 class ToggleSwitch(tk.Canvas):
-    
-    def __init__(self, parent, width=60, height=30, bg_on="#4CAF50",\
-                 bg_off="#888888",
-                 circle_color="#FFFFFF", command=None, initial=False, theme=True):
-        
-        super().__init__(parent, width=width, height=height, highlightthickness=0,
-                         bg=CURRENT_BG)
+
+    def __init__(
+        self,
+        parent,
+        width=60,
+        height=30,
+        bg_on="#4CAF50",
+        bg_off="#888888",
+        circle_color="#FFFFFF",
+        command=None,
+        initial=False,
+        theme=True,
+    ):
+
+        super().__init__(
+            parent, width=width, height=height, highlightthickness=0, bg=CURRENT_BG
+        )
 
         self.width = width
         self.theme = theme
@@ -85,32 +98,51 @@ class ToggleSwitch(tk.Canvas):
         self.circle_pos = self.radius if not initial else width - self.radius
 
         self.bg_rect = self.create_rounded_rect(
-            0, 0, width, height, radius=self.radius,
-            fill=self.bg_on if initial else self.bg_off
+            0,
+            0,
+            width,
+            height,
+            radius=self.radius,
+            fill=self.bg_on if initial else self.bg_off,
         )
 
         self.circle = self.create_oval(
-            self.circle_pos - self.radius, 0,
-            self.circle_pos + self.radius, height,
-            fill=self.circle_color, outline=""
+            self.circle_pos - self.radius,
+            0,
+            self.circle_pos + self.radius,
+            height,
+            fill=self.circle_color,
+            outline="",
         )
 
         self.bind("<Button-1>", self.toggle)
 
     def create_rounded_rect(self, x1, y1, x2, y2, radius=25, **kwargs):
         points = [
-            x1+radius, y1,
-            x2-radius, y1,
-            x2, y1,
-            x2, y1+radius,
-            x2, y2-radius,
-            x2, y2,
-            x2-radius, y2,
-            x1+radius, y2,
-            x1, y2,
-            x1, y2-radius,
-            x1, y1+radius,
-            x1, y1
+            x1 + radius,
+            y1,
+            x2 - radius,
+            y1,
+            x2,
+            y1,
+            x2,
+            y1 + radius,
+            x2,
+            y2 - radius,
+            x2,
+            y2,
+            x2 - radius,
+            y2,
+            x1 + radius,
+            y2,
+            x1,
+            y2,
+            x1,
+            y2 - radius,
+            x1,
+            y1 + radius,
+            x1,
+            y1,
         ]
         return self.create_polygon(points, smooth=True, **kwargs)
 
@@ -119,7 +151,7 @@ class ToggleSwitch(tk.Canvas):
         self.animate()
         if self.command:
             self.command(self.state)
-            
+
         if self.theme:
             self.after(500, os.execl(sys.executable, sys.executable, *sys.argv))
 
@@ -138,9 +170,12 @@ class ToggleSwitch(tk.Canvas):
                 dx = target - cx
                 self.move(self.circle, dx, 0)
 
-            self.itemconfig(self.bg_rect, fill=self.bg_on if self.state else self.bg_off)
+            self.itemconfig(
+                self.bg_rect, fill=self.bg_on if self.state else self.bg_off
+            )
 
         slide()
+
 
 class PanelContext:
     def __init__(self, root, notebook, tabs):
@@ -148,21 +183,26 @@ class PanelContext:
         self.notebook = notebook
         self.tabs = tabs
 
+
 # -------------------------------
 #  Theme Handling
 # -------------------------------
+
 
 def load_theme():
     with open(THEME_FILE, "r") as f:
         return f.read().strip()
 
+
 def save_theme(theme):
     with open(THEME_FILE, "w") as f:
         f.write(theme)
 
+
 if not os.path.exists(THEME_FILE):
     save_theme("light")
-    
+
+
 def apply_theme():
     global CURRENT_BG
     theme = load_theme()
@@ -180,39 +220,33 @@ def apply_theme():
 
     root.configure(bg=CURRENT_BG)
 
-    style.configure("TButton",
-                    background=CURRENT_BG,
-                    foreground=fg,
-                    borderwidth=0)
-    
-    style.map("TButton",
-              background=[("active", hover_bg)],
-              foreground=[("active", hover_fg)])
+    style.configure("TButton", background=CURRENT_BG, foreground=fg, borderwidth=0)
 
-    style.configure("CustomNotebook.TNotebook",
-                    background=CURRENT_BG,
-                    borderwidth=0)
-    
-    style.configure("CustomNotebook.TNotebook.Tab",
-                    background=CURRENT_BG,
-                    foreground=fg)
-    
-    style.map("CustomNotebook.TNotebook.Tab",
-              background=[("selected", CURRENT_BG)],
-              foreground=[("selected", fg)])
+    style.map(
+        "TButton", background=[("active", hover_bg)], foreground=[("active", hover_fg)]
+    )
 
-    style.configure("TLabel",
-                    background=CURRENT_BG,
-                    foreground=fg)
-    
-    style.configure("TFrame",
-                    background=CURRENT_BG,
-                    foreground=fg)
+    style.configure("CustomNotebook.TNotebook", background=CURRENT_BG, borderwidth=0)
+
+    style.configure(
+        "CustomNotebook.TNotebook.Tab", background=CURRENT_BG, foreground=fg
+    )
+
+    style.map(
+        "CustomNotebook.TNotebook.Tab",
+        background=[("selected", CURRENT_BG)],
+        foreground=[("selected", fg)],
+    )
+
+    style.configure("TLabel", background=CURRENT_BG, foreground=fg)
+
+    style.configure("TFrame", background=CURRENT_BG, foreground=fg)
 
 
 # -------------------------------
 #  Popups + Command Execution
 # -------------------------------
+
 
 def truncate_output(text, max_lines=30, max_chars=1000):
     if not text:
@@ -234,24 +268,24 @@ def truncate_output(text, max_lines=30, max_chars=1000):
         joined = joined.rstrip() + "..."
     return joined
 
+
 def show_popup(title, message):
     popup = tk.Toplevel(root)
     popup.title(title)
     popup.transient(root)
     popup.resizable(False, False)
-    popup.geometry("+%d+%d" % (root.winfo_rootx() + 60,
-                               root.winfo_rooty() + 60))
+    popup.geometry("+%d+%d" % (root.winfo_rootx() + 60, root.winfo_rooty() + 60))
     popup.configure(bg=CURRENT_BG)
 
     frame = tk.Frame(popup, bg=CURRENT_BG, padx=15, pady=15)
     frame.pack(fill="both", expand=True)
 
     fg = "#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000"
-    label = tk.Label(frame, text=message, bg=CURRENT_BG,
-                     fg=fg, justify="left")
+    label = tk.Label(frame, text=message, bg=CURRENT_BG, fg=fg, justify="left")
     label.pack(pady=(0, 10))
 
     if title in [it["name"] for it in items]:
+
         def run_again():
             for it in items:
                 if it["name"] == title:
@@ -259,20 +293,21 @@ def show_popup(title, message):
                         run_script_with_popup(it["name"], it["path"])
                     else:
                         run_inline_with_popup(it["name"], it["command"], it["kind"])
-                    
+
         ttk.Button(frame, text="Run Again", command=run_again).pack(pady=(0, 10))
-    
+
     ttk.Button(frame, text="OK", command=popup.destroy).pack()
+
 
 def run_inline_with_popup(name, command, kind="info"):
     try:
         if kind == "info":
-            result = subprocess.run( 
+            result = subprocess.run(
                 command,
                 shell=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
             )
             output = result.stdout.strip() or result.stderr.strip()
             if not output:
@@ -284,6 +319,7 @@ def run_inline_with_popup(name, command, kind="info"):
             show_popup(name, "Command executed.")
     except Exception as e:
         show_popup(f"{name} - Error {e}")
+
 
 def run_script_with_popup(name, path):
     try:
@@ -306,17 +342,29 @@ root.resizable(False, True)
 # Setup icons
 ICON_PATH = HOME_DIR + "icons/"
 ICON_SIZE = (24, 24)
-    
+
+
 def load_icon(name):
     try:
         img = Image.open(ICON_PATH + name).resize(ICON_SIZE, Image.LANCZOS)
         return ImageTk.PhotoImage(img)
     except:
-        print("Something went wrong loading the icons. Check that they ALL exist (in the icons/ folder).")
+        print(
+            "Something went wrong loading the icons. Check that they ALL exist (in the icons/ folder)."
+        )
         sys.exit(0)
 
+
 # Load the icons
-icons = {"folder": load_icon("folder.png"), "file": load_icon("file.png"), "script": load_icon("script.png"), "image": load_icon("image.png"), "exec": load_icon("exec.png"), "video": load_icon("video.png"), "audio": load_icon("audio.png")}
+icons = {
+    "folder": load_icon("folder.png"),
+    "file": load_icon("file.png"),
+    "script": load_icon("script.png"),
+    "image": load_icon("image.png"),
+    "exec": load_icon("exec.png"),
+    "video": load_icon("video.png"),
+    "audio": load_icon("audio.png"),
+}
 
 style = ttk.Style()
 
@@ -325,9 +373,21 @@ apply_theme()
 notebook = ttk.Notebook(root, style="CustomNotebook.TNotebook")
 notebook.pack(fill="both", expand=True)
 
-tab_names = ["Dashboard", "System", "Developer", "Plugins", "Tasks",
-             "Network", "Maintenance", "Files", "Favorites",
-             "Scheduler", "Clipboard", "Search", "Settings"]
+tab_names = [
+    "Dashboard",
+    "System",
+    "Developer",
+    "Plugins",
+    "Tasks",
+    "Network",
+    "Maintenance",
+    "Files",
+    "Favorites",
+    "Scheduler",
+    "Clipboard",
+    "Search",
+    "Settings",
+]
 
 dash_interval = tk.IntVar(value=5)
 
@@ -336,7 +396,8 @@ for name in tab_names:
     frame = tk.Frame(notebook, bg=CURRENT_BG)
     notebook.add(frame, text=name)
     tabs[name] = frame
-    
+
+
 def add_section(parent, title):
     fg = "#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000"
 
@@ -344,17 +405,14 @@ def add_section(parent, title):
     frame.pack(fill="x", pady=(15, 5))
 
     label = tk.Label(
-        frame,
-        text=title,
-        bg=CURRENT_BG,
-        fg=fg,
-        font=("TkDefaultFont", 12, "bold")
+        frame, text=title, bg=CURRENT_BG, fg=fg, font=("TkDefaultFont", 12, "bold")
     )
     label.pack(anchor="w", padx=10)
 
     sep = tk.Frame(parent, bg=fg, height=1)
     sep.pack(fill="x", padx=10, pady=(0, 10))
-    
+
+
 def build_tasks_panel():
     global task_list_frame
 
@@ -363,79 +421,96 @@ def build_tasks_panel():
 
     task_list_frame = tk.Frame(tabs["Tasks"], bg=CURRENT_BG)
     task_list_frame.pack(fill="both", expand=True, padx=10, pady=10)
-    
+
+
 build_tasks_panel()
 
 panel = PanelContext(root, notebook, tabs)
 
 # Keyboard Shortcuts
-    
+
 # Ctrl+S  ->  jump to Search tab
 root.bind("<Control-s>", lambda e: notebook.select(tabs["Search"]))
 
 theme_toggle: ToggleSwitch | None = None
 # Ctrl+T  ->  toggle theme
-root.bind("<Control-t>", lambda e: theme_toggle.toggle()) # type: ignore[union-attr]
+root.bind("<Control-t>", lambda e: theme_toggle.toggle())  # type: ignore[union-attr]
 
 path_var: tk.StringVar | None = None
 # Ctrl+F  ->  open plugin folder in Files tab
-root.bind("<Control-f>", lambda e: (
-    notebook.select(tabs["Files"]),
-    path_var.set(PLUGIN_DIR), # type: ignore[union-attr, func-returns-value]
-    refresh_files()
-))
+root.bind(
+    "<Control-f>",
+    lambda e: (
+        notebook.select(tabs["Files"]),
+        path_var.set(PLUGIN_DIR),  # type: ignore[union-attr, func-returns-value]
+        refresh_files(),
+    ),
+)
 
 # Refresh and tab changes
-    
+
+
 def on_tab_change(event):
     tab = event.widget.tab(event.widget.index("current"))["text"]
     if tab == "Search":
         do_search()
 
+
 notebook.bind("<<NotebookTabChanged>>", on_tab_change)
+
 
 def refresh_tab_backgrounds():
     for frame in tabs.values():
         frame.configure(bg=CURRENT_BG)
-        
-        
+
+
 tasks_tab = tabs["Tasks"]
 
 # -------------------------------
 #  Tasks Tab
 # -------------------------------
 
+
 def refresh_tasks_panel():
     for child in task_list_frame.winfo_children():
         child.destroy()
-        
+
     fg = "#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000"
 
-    header = tk.Label(task_list_frame, text="PID    CPU%    MEM%    NAME",
-                      bg=CURRENT_BG, fg=fg, font=("TkDefaultFont", 10, "bold"))
+    header = tk.Label(
+        task_list_frame,
+        text="PID    CPU%    MEM%    NAME",
+        bg=CURRENT_BG,
+        fg=fg,
+        font=("TkDefaultFont", 10, "bold"),
+    )
     header.pack(anchor="w", pady=(0, 5))
 
     processes = []
-    for proc in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent']):
+    for proc in psutil.process_iter(["pid", "name", "cpu_percent", "memory_percent"]):
         try:
             processes.append(proc.info)
         except Exception:
             continue
 
-    processes.sort(key=lambda p: p['cpu_percent'], reverse=True)
+    processes.sort(key=lambda p: p["cpu_percent"], reverse=True)
 
     for info in processes:
-        pid = info['pid']
-        name = info['name']
-        cpu = info['cpu_percent']
-        mem = info['memory_percent']
+        pid = info["pid"]
+        name = info["name"]
+        cpu = info["cpu_percent"]
+        mem = info["memory_percent"]
 
         row = tk.Frame(task_list_frame, bg=CURRENT_BG)
         row.pack(fill="x", pady=1)
 
-        label = tk.Label(row,
-                         text=f"{pid:<6} {cpu:>5.1f}%   {mem:>5.1f}%   {name}",
-                         bg=CURRENT_BG, fg=fg, anchor="w")
+        label = tk.Label(
+            row,
+            text=f"{pid:<6} {cpu:>5.1f}%   {mem:>5.1f}%   {name}",
+            bg=CURRENT_BG,
+            fg=fg,
+            anchor="w",
+        )
         label.pack(side="left", fill="x", expand=True)
 
         def kill_process(p=pid):
@@ -448,6 +523,7 @@ def refresh_tasks_panel():
         ttk.Button(row, text="Kill", command=kill_process).pack(side="right")
 
     tasks_tab.after(dash_interval.get() * 1000, refresh_tasks_panel)
+
 
 build_tasks_panel()
 refresh_tasks_panel()
@@ -470,7 +546,11 @@ theme_toggle = ToggleSwitch(
     bg_off="#424040",
     circle_color="#FFFFFF",
     initial=(load_theme() == "dark"),
-    command=lambda s: (save_theme("dark" if s else "light"), apply_theme(), refresh_tab_backgrounds())
+    command=lambda s: (
+        save_theme("dark" if s else "light"),
+        apply_theme(),
+        refresh_tab_backgrounds(),
+    ),
 )
 
 theme_toggle.pack(pady=10)
@@ -479,9 +559,11 @@ ttk.Label(settings, text="Fuzzy Search").pack(pady=(10, 0))
 
 FUZZY_ENABLED = True
 
+
 def toggle_fuzzy(state):
     global FUZZY_ENABLED
     FUZZY_ENABLED = state
+
 
 fuzzy_toggle = ToggleSwitch(
     settings,
@@ -492,25 +574,28 @@ fuzzy_toggle = ToggleSwitch(
     circle_color="#FFFFFF",
     initial=FUZZY_ENABLED,
     command=toggle_fuzzy,
-    theme=False
+    theme=False,
 )
 fuzzy_toggle.pack(pady=10)
 
 ttk.Label(settings, text="Standard Refresh Rate (seconds)").pack(pady=(20, 0))
 ttk.Spinbox(settings, from_=1, to=60, textvariable=dash_interval).pack()
 
+
 def run_async(func, *args, **kwargs):
     threading.Thread(target=lambda: func(*args, **kwargs), daemon=True).start()
-    
+
+
 # -------------------------------
 #  Plugins
 # -------------------------------
-    
+
 plugins_tab = tabs["Plugins"]
+
 
 def refresh_plugins():
     global items
-    
+
     if not PLUGINS_READY:
         return
 
@@ -536,23 +621,26 @@ def refresh_plugins():
                 add_button_to_tab(
                     it["tab"],
                     it["name"],
-                    lambda it=it: run_script_with_popup(it["name"], it["path"])
+                    lambda it=it: run_script_with_popup(it["name"], it["path"]),
                 )
             else:
                 add_button_to_tab(
                     it["tab"],
                     it["name"],
-                    lambda it=it: run_inline_with_popup(it["name"], it["command"], it["kind"])
+                    lambda it=it: run_inline_with_popup(
+                        it["name"], it["command"], it["kind"]
+                    ),
                 )
 
     # Inject plugin widgets again
     inject_plugin_widgets()
 
     show_popup("Plugins Reloaded", "All plugins have been refreshed.")
-    
-    
+
+
 # Creating a new file/folder
-    
+
+
 def create_new_item(base_path, is_folder, callback=None):
     popup = tk.Toplevel(root)
     popup.title("Create")
@@ -581,12 +669,14 @@ def create_new_item(base_path, is_folder, callback=None):
             show_popup("Create Error", str(e))
 
     ttk.Button(popup, text="OK", command=do_create).pack(pady=10)
-    
+
+
 # Making a plugin
-    
+
+
 def new_plugin():
     def write_template(filepath):
-        
+
         # Example plugin template
         template = f"""#Tutorial:
 #Import ttk
@@ -646,15 +736,17 @@ def register(api):
     api["add_widget"].append(("System", draw_widget))"""
         with open(filepath, "w") as f:
             f.write(template)
-        
+
         refresh_plugins()
-        
+
     create_new_item(HOME_DIR + ".controlpanel_plugins", False, callback=write_template)
-    
+
+
 # -------------------------------
 #  Plugins Tab
 # -------------------------------
-    
+
+
 def refresh_plugins_panel():
     for child in plugins_tab.winfo_children():
         child.destroy()
@@ -680,21 +772,20 @@ def refresh_plugins_panel():
             command=lambda f=fname: (
                 path_var.set(PLUGIN_DIR),
                 refresh_files(),
-                notebook.select(tabs["Files"])
-            )
+                notebook.select(tabs["Files"]),
+            ),
         ).pack(side="right")
 
     ttk.Button(
         plugins_tab,
         text="Reload Plugins",
-        command=lambda: (refresh_plugins(), refresh_plugins_panel())
+        command=lambda: (refresh_plugins(), refresh_plugins_panel()),
     ).pack(pady=20)
-    
-    ttk.Button(
-        plugins_tab,
-        text="New Plugin",
-        command=lambda: (new_plugin())
-    ).pack(pady=20)
+
+    ttk.Button(plugins_tab, text="New Plugin", command=lambda: (new_plugin())).pack(
+        pady=20
+    )
+
 
 refresh_plugins_panel()
 
@@ -717,11 +808,13 @@ show_hidden = tk.BooleanVar(value=False)
 preview_frame = tk.Frame(file_frame, bg=CURRENT_BG)
 preview_frame.pack(side="right", fill="both")
 
+
 def clear_preview():
     global preview_frame
     if preview_frame is not None:
         preview_frame.destroy()
         preview_frame = None
+
 
 # Largest function by far! Around 450 lines!
 def show_preview(path):
@@ -843,8 +936,8 @@ def show_preview(path):
             lbl.pack(pady=10)
 
             cap = cv2.VideoCapture(path)
-            fps = cap.get(cv2.CAP_PROP_FPS) # Get frames per second of the video
-            
+            fps = cap.get(cv2.CAP_PROP_FPS)  # Get frames per second of the video
+
             audio_loaded = False
             try:
                 pygame.mixer.music.load(path)
@@ -916,15 +1009,15 @@ def show_preview(path):
                 font=("TkDefaultFont", 12),
             )
             lbl.pack(pady=50)
-            
+
     if ext in [".m3u", ".m3u8"]:
         try:
             with open(path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
 
             playlist_items = []  # Stores the raw file path/URL
-            song_titles = []     # Stores the clean song name
-            
+            song_titles = []  # Stores the clean song name
+
             # Temporary variable to track the last found title
             last_extinf_title = None
 
@@ -932,30 +1025,37 @@ def show_preview(path):
                 clean_line = line.strip()
                 if not clean_line:
                     continue
-                
+
                 if clean_line.startswith("#EXTINF:"):
                     # Extract everything after the first comma
                     if "," in clean_line:
                         last_extinf_title = clean_line.split(",", 1)[1]
-                        
+
                 elif not clean_line.startswith("#"):
                     # This is a media link or file path
                     playlist_items.append(clean_line)
-                    
-                    # If we found a title right above it, use it! 
+
+                    # If we found a title right above it, use it!
                     if last_extinf_title:
                         song_titles.append(last_extinf_title)
-                        last_extinf_title = None # Reset for next
+                        last_extinf_title = None  # Reset for next
                     else:
                         # Fallback to the file name if no #EXTINF was provided
                         song_titles.append(os.path.basename(clean_line))
 
             # --- Build UI elements ---
-            lbl = tk.Label(preview_frame, text="Playlist", 
-                           bg=CURRENT_BG, fg=fg, font=("TkDefaultFont", 11, "bold"))
+            lbl = tk.Label(
+                preview_frame,
+                text="Playlist",
+                bg=CURRENT_BG,
+                fg=fg,
+                font=("TkDefaultFont", 11, "bold"),
+            )
             lbl.pack(pady=5)
 
-            listbox = tk.Listbox(preview_frame, bg=CURRENT_BG, fg=fg, bd=0, highlightthickness=0)
+            listbox = tk.Listbox(
+                preview_frame, bg=CURRENT_BG, fg=fg, bd=0, highlightthickness=0
+            )
             listbox.pack(fill="both", expand=True, padx=10, pady=5)
 
             # 💡 Insert the clean song titles into the visual list
@@ -967,15 +1067,20 @@ def show_preview(path):
                 if selection:
                     index = selection[0]
                     target = playlist_items[index]
-                    
+
                     # Dual-stream YouTube extraction
                     if "youtube.com" in target or "youtu.be" in target:
                         try:
                             for widget in preview_frame.winfo_children():
-                                if widget != close_btn: 
+                                if widget != close_btn:
                                     widget.destroy()
-                            
-                            lbl = tk.Label(preview_frame, text="⏳ Caching stream to /tmp...", bg=CURRENT_BG, fg=fg)
+
+                            lbl = tk.Label(
+                                preview_frame,
+                                text="⏳ Caching stream to /tmp...",
+                                bg=CURRENT_BG,
+                                fg=fg,
+                            )
                             lbl.pack(pady=20)
                             preview_frame.update()
 
@@ -988,32 +1093,69 @@ def show_preview(path):
                                     while True:
                                         temp_video = f"{video_base}_{index}.mp4"
                                         temp_audio = f"{audio_base}_{index}.wav"
-                                        if not os.path.exists(temp_video) and not os.path.exists(temp_audio):
+                                        if not os.path.exists(
+                                            temp_video
+                                        ) and not os.path.exists(temp_audio):
                                             break
                                         index += 1
                                         if index > 1000:
-                                            raise IOError("Could not allocate a free temporary file slot.")
+                                            raise IOError(
+                                                "Could not allocate a free temporary file slot."
+                                            )
 
                                     # Blocking Download
                                     subprocess.run(
-                                        ["yt-dlp", "-f", "bestvideo[vcodec^=avc]+bestaudio/best[ext=mp4]", 
-                                         "-o", temp_video, "--merge-output-format", "mp4", target_url],
-                                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
+                                        [
+                                            "yt-dlp",
+                                            "-f",
+                                            "bestvideo[vcodec^=avc]+bestaudio/best[ext=mp4]",
+                                            "-o",
+                                            temp_video,
+                                            "--merge-output-format",
+                                            "mp4",
+                                            target_url,
+                                        ],
+                                        stdout=subprocess.DEVNULL,
+                                        stderr=subprocess.DEVNULL,
+                                        check=True,
                                     )
 
                                     # Blocking Audio Extraction
                                     subprocess.run(
-                                        ['ffmpeg', '-y', '-i', temp_video, '-vn', '-acodec', 'pcm_s16le', '-ar', '44100', '-ac', '2', temp_audio],
-                                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
+                                        [
+                                            "ffmpeg",
+                                            "-y",
+                                            "-i",
+                                            temp_video,
+                                            "-vn",
+                                            "-acodec",
+                                            "pcm_s16le",
+                                            "-ar",
+                                            "44100",
+                                            "-ac",
+                                            "2",
+                                            temp_audio,
+                                        ],
+                                        stdout=subprocess.DEVNULL,
+                                        stderr=subprocess.DEVNULL,
+                                        check=True,
                                     )
 
                                     # Safe pass back to the Main Thread for playback initiation
                                     if preview_frame.winfo_exists():
-                                        preview_frame.after(0, lambda: start_playback(temp_video, temp_audio, label_widget))
+                                        preview_frame.after(
+                                            0,
+                                            lambda: start_playback(
+                                                temp_video, temp_audio, label_widget
+                                            ),
+                                        )
 
                                 except Exception as thread_err:
                                     if preview_frame.winfo_exists():
-                                        preview_frame.after(0, lambda t=thread_err: handle_thread_error(t))
+                                        preview_frame.after(
+                                            0,
+                                            lambda t=thread_err: handle_thread_error(t),
+                                        )
 
                             # Media initialization and video looping
                             def start_playback(temp_video, temp_audio, caching_lbl):
@@ -1023,7 +1165,7 @@ def show_preview(path):
                                 # Global scope ensures cv2 capture reference survives outside thread block
                                 global cap
                                 cap = cv2.VideoCapture(temp_video)
-                                
+
                                 pygame.mixer.music.load(temp_audio)
                                 pygame.mixer.music.play()
 
@@ -1031,10 +1173,13 @@ def show_preview(path):
                                 play_lbl.pack(pady=10)
 
                                 def stream():
-                                    if not preview_frame.winfo_exists() or not play_lbl.winfo_exists():
+                                    if (
+                                        not preview_frame.winfo_exists()
+                                        or not play_lbl.winfo_exists()
+                                    ):
                                         cleanup(temp_video, temp_audio)
                                         return
-                                    
+
                                     current_millis = pygame.mixer.music.get_pos()
                                     if current_millis < 0:
                                         loop_media()
@@ -1042,19 +1187,21 @@ def show_preview(path):
 
                                     fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
                                     target_frame = int((current_millis / 1000.0) * fps)
-                                    
+
                                     current_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
                                     while current_frame < target_frame:
                                         if not cap.grab():
                                             break
                                         current_frame += 1
-                                    
+
                                     ret, frame = cap.read()
                                     if ret:
-                                        cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                                        cv2image = cv2.cvtColor(
+                                            frame, cv2.COLOR_BGR2RGB
+                                        )
                                         img = Image.fromarray(cv2image)
                                         img.thumbnail((280, 280))
-                                        
+
                                         tkimg = ImageTk.PhotoImage(image=img)
                                         play_lbl.configure(image=tkimg)
                                         play_lbl.image = tkimg
@@ -1065,9 +1212,9 @@ def show_preview(path):
                                 def loop_media():
                                     if play_lbl.winfo_exists():
                                         cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-                                        try: 
+                                        try:
                                             pygame.mixer.music.play()
-                                        except: 
+                                        except:
                                             pass
                                         play_lbl.after(10, stream)
 
@@ -1080,36 +1227,47 @@ def show_preview(path):
 
                             def cleanup(v_file, a_file):
                                 global cap
-                                try: cap.release()
-                                except: pass
+                                try:
+                                    cap.release()
+                                except:
+                                    pass
                                 try:
                                     pygame.mixer.music.stop()
                                     pygame.mixer.music.unload()
-                                except: pass
+                                except:
+                                    pass
                                 for f in [v_file, a_file]:
                                     try:
-                                        if os.path.exists(f): os.remove(f)
-                                    except: pass
+                                        if os.path.exists(f):
+                                            os.remove(f)
+                                    except:
+                                        pass
 
                             def handle_thread_error(err):
                                 for widget in preview_frame.winfo_children():
-                                    if widget != close_btn: 
+                                    if widget != close_btn:
                                         widget.destroy()
                                 err_lbl = tk.Label(
-                                    preview_frame, text=f"Youtube Preview error:\n{err}",
-                                    bg=CURRENT_BG, fg=fg, font=("TkDefaultFont", 10), wraplength=250
+                                    preview_frame,
+                                    text=f"Youtube Preview error:\n{err}",
+                                    bg=CURRENT_BG,
+                                    fg=fg,
+                                    font=("TkDefaultFont", 10),
+                                    wraplength=250,
                                 )
                                 err_lbl.pack(pady=50)
                                 close_btn.configure(command=clear_preview)
 
-                            yt_thread = threading.Thread(target=run_yt_worker, args=(target, lbl), daemon=True)
+                            yt_thread = threading.Thread(
+                                target=run_yt_worker, args=(target, lbl), daemon=True
+                            )
                             yt_thread.start()
                             return
-                            
+
                         except Exception as e:
                             handle_thread_error(e)
                             return
-                            
+
                     # Normal local file fallback
                     if not os.path.isabs(target) and not target.startswith("http"):
                         target = os.path.join(os.path.dirname(path), target)
@@ -1117,7 +1275,7 @@ def show_preview(path):
 
             listbox.bind("<Double-Button-1>", on_playlist_double_click)
             return
-            
+
         except Exception as e:
             lbl = tk.Label(
                 preview_frame,
@@ -1213,9 +1371,10 @@ def show_preview(path):
             pass
 
     # --- Fallback ---
-    tk.Label(
-        preview_frame, text="No preview available", bg=CURRENT_BG, fg=fg
-    ).pack(pady=20)
+    tk.Label(preview_frame, text="No preview available", bg=CURRENT_BG, fg=fg).pack(
+        pady=20
+    )
+
 
 # Renaming
 def rename_file(old_path):
@@ -1242,112 +1401,295 @@ def rename_file(old_path):
 
     ttk.Button(popup, text="OK", command=do_rename).pack(pady=10)
 
+
 file_context_menu = None
 context_target_path = None
 
 # --- Image files ---
 IMAGE_EXTS = {
-    ".jpg", ".jpeg", ".jpe", ".jif", ".jfif", ".jfi",  # JPEG
-    ".png", ".apng",                                  # PNG & Animated PNG
-    ".gif",                                           # GIF
-    ".webp",                                          # WebP
-    ".avif",                                          # AVIF (Modern High Compression)
-    ".heic", ".heif", ".hif",                         # HEIC/HEIF (Apple/Modern)
-    
+    ".jpg",
+    ".jpeg",
+    ".jpe",
+    ".jif",
+    ".jfif",
+    ".jfi",  # JPEG
+    ".png",
+    ".apng",  # PNG & Animated PNG
+    ".gif",  # GIF
+    ".webp",  # WebP
+    ".avif",  # AVIF (Modern High Compression)
+    ".heic",
+    ".heif",
+    ".hif",  # HEIC/HEIF (Apple/Modern)
     # Lossless & Bitmap
-    ".tiff", ".tif",                                  # TIFF
-    ".bmp", ".dib",                                   # BMP
-    ".tga", ".icb", ".vda", ".vst",                   # Targa
-    
+    ".tiff",
+    ".tif",  # TIFF
+    ".bmp",
+    ".dib",  # BMP
+    ".tga",
+    ".icb",
+    ".vda",
+    ".vst",  # Targa
     # Vector & Design
-    ".svg", ".svgz",                                  # SVG
-    ".ico", ".cur",                                   # Windows Icon/Cursor
-    ".psd", ".psb",                                   # Photoshop (Standard & Large)
-    ".ai", ".eps",                                    # Illustrator / PostScript
-    ".xd", ".sketch", ".fig",                         # UX Design formats
-    ".indd", ".indt",                                 # InDesign
-    ".xcf",                                           # GIMP
-    
+    ".svg",
+    ".svgz",  # SVG
+    ".ico",
+    ".cur",  # Windows Icon/Cursor
+    ".psd",
+    ".psb",  # Photoshop (Standard & Large)
+    ".ai",
+    ".eps",  # Illustrator / PostScript
+    ".xd",
+    ".sketch",
+    ".fig",  # UX Design formats
+    ".indd",
+    ".indt",  # InDesign
+    ".xcf",  # GIMP
     # Professional RAW Formats
-    ".raw", ".arw", ".cr2", ".cr3", ".nef", ".nrw",   # Sony, Canon, Nikon
-    ".orf", ".raf", ".dng", ".rw2", ".srw", ".k25",   # Olympus, Fuji, Adobe, Panasonic, Samsung
-    ".bay", ".erf", ".mef", ".pef", ".sr2", ".x3f"    # Miscellaneous Raw
+    ".raw",
+    ".arw",
+    ".cr2",
+    ".cr3",
+    ".nef",
+    ".nrw",  # Sony, Canon, Nikon
+    ".orf",
+    ".raf",
+    ".dng",
+    ".rw2",
+    ".srw",
+    ".k25",  # Olympus, Fuji, Adobe, Panasonic, Samsung
+    ".bay",
+    ".erf",
+    ".mef",
+    ".pef",
+    ".sr2",
+    ".x3f",  # Miscellaneous Raw
 }
 
 # --- Script / code files ---
 SCRIPT_EXTS = {
     # Scripting & Shell
-    '.py', '.pyw', '.sh', '.bash', '.zsh', '.ps1', '.php', '.rb', '.pl', '.lua', 
-    '.tcl', '.awk', '.bat', '.cmd', '.vbs', '.js', '.ts', '.dart', '.r',
-
+    ".py",
+    ".pyw",
+    ".sh",
+    ".bash",
+    ".zsh",
+    ".ps1",
+    ".php",
+    ".rb",
+    ".pl",
+    ".lua",
+    ".tcl",
+    ".awk",
+    ".bat",
+    ".cmd",
+    ".vbs",
+    ".js",
+    ".ts",
+    ".dart",
+    ".r",
     # Systems & Compiled Source
-    '.c', '.cpp', '.cc', '.cxx', '.h', '.hpp', '.cs', '.java', '.kt', '.swift', 
-    '.go', '.rs', '.m', '.mm', '.scala', '.erl', '.ex', '.exs', '.hs', '.clj', 
-    '.asm', '.s', '.v', '.sv',
-
+    ".c",
+    ".cpp",
+    ".cc",
+    ".cxx",
+    ".h",
+    ".hpp",
+    ".cs",
+    ".java",
+    ".kt",
+    ".swift",
+    ".go",
+    ".rs",
+    ".m",
+    ".mm",
+    ".scala",
+    ".erl",
+    ".ex",
+    ".exs",
+    ".hs",
+    ".clj",
+    ".asm",
+    ".s",
+    ".v",
+    ".sv",
     # Web Markup & Logic
-    '.html', '.htm', '.xhtml', '.css', '.scss', '.sass', '.less',
-    '.jsp', '.asp', '.aspx', '.jsx', '.tsx', '.svelte', '.vue', '.coffee',
-
+    ".html",
+    ".htm",
+    ".xhtml",
+    ".css",
+    ".scss",
+    ".sass",
+    ".less",
+    ".jsp",
+    ".asp",
+    ".aspx",
+    ".jsx",
+    ".tsx",
+    ".svelte",
+    ".vue",
+    ".coffee",
     # Binary & Compiled Executables
-    '.exe', '.dll', '.so', '.dylib', '.bin', '.app', '.msi', '.com', '.scr',
-    '.pyc', '.pyo', '.pyd', '.jar', '.beam',
-
+    ".exe",
+    ".dll",
+    ".so",
+    ".dylib",
+    ".bin",
+    ".app",
+    ".msi",
+    ".com",
+    ".scr",
+    ".pyc",
+    ".pyo",
+    ".pyd",
+    ".jar",
+    ".beam",
     # Build Systems & Specialized Scripts
-    '.ipynb', '.makefile', '.cmake', '.dockerfile', '.sql', '.proto', '.graphql'
+    ".ipynb",
+    ".makefile",
+    ".cmake",
+    ".dockerfile",
+    ".sql",
+    ".proto",
+    ".graphql",
 }
 
 # --- Text & Configuration ---
 TEXT_EXTS = {
     # Plain Text & Documentation
-    ".txt", ".md", ".rst", ".adoc", ".text", ".nfo", ".tex", ".latex", ".readme", ".license",
-    
+    ".txt",
+    ".md",
+    ".rst",
+    ".adoc",
+    ".text",
+    ".nfo",
+    ".tex",
+    ".latex",
+    ".readme",
+    ".license",
     # Data & Serialization (Non-Executable)
-    ".json", ".jsonl", ".csv", ".tsv", ".xml", ".yaml", ".yml", ".toml", ".ndjson",
-    
+    ".json",
+    ".jsonl",
+    ".csv",
+    ".tsv",
+    ".xml",
+    ".yaml",
+    ".yml",
+    ".toml",
+    ".ndjson",
     # Configuration & Logs
-    ".ini", ".cfg", ".log", ".conf", ".env", ".properties", ".prefs", ".opts",
-    
+    ".ini",
+    ".cfg",
+    ".log",
+    ".conf",
+    ".env",
+    ".properties",
+    ".prefs",
+    ".opts",
     # Dev Metadata
-    ".gitignore", ".dockerignore", ".editorconfig"
+    ".gitignore",
+    ".dockerignore",
+    ".editorconfig",
 }
 
 VIDEO_EXTS = {
     # Common Web & Standard Containers
-    ".mp4", ".m4v", ".mov", ".qt", ".avi", ".wmv", ".asf", 
-    ".mpg", ".mpeg", ".m1v", ".m2v", ".mpv", ".mpe",
-    
+    ".mp4",
+    ".m4v",
+    ".mov",
+    ".qt",
+    ".avi",
+    ".wmv",
+    ".asf",
+    ".mpg",
+    ".mpeg",
+    ".m1v",
+    ".m2v",
+    ".mpv",
+    ".mpe",
     # Modern & High Efficiency
-    ".webm", ".mkv", ".flv", ".f4v", ".f4p", ".f4a", ".f4b",
-    ".ogv", ".ogx", ".divx", ".xvid",
-    
+    ".webm",
+    ".mkv",
+    ".flv",
+    ".f4v",
+    ".f4p",
+    ".f4a",
+    ".f4b",
+    ".ogv",
+    ".ogx",
+    ".divx",
+    ".xvid",
     # Professional & Broadcast
-    ".mxf", ".m2ts", ".mts", ".ts", ".tsv", ".m2p", ".ps",
-    ".vob", ".evo", ".mod", ".tod", ".dv", ".dvc",
-    
+    ".mxf",
+    ".m2ts",
+    ".mts",
+    ".ts",
+    ".tsv",
+    ".m2p",
+    ".ps",
+    ".vob",
+    ".evo",
+    ".mod",
+    ".tod",
+    ".dv",
+    ".dvc",
     # Mobile & Legacy
-    ".3gp", ".3g2", ".3gpp", ".3gpp2", ".rm", ".rmvb", ".amv", ".nsv",
-    
+    ".3gp",
+    ".3g2",
+    ".3gpp",
+    ".3gpp2",
+    ".rm",
+    ".rmvb",
+    ".amv",
+    ".nsv",
     # Playlist & Streaming Descriptors
-    ".m3u8", ".ism", ".ismv"
+    ".m3u8",
+    ".ism",
+    ".ismv",
 }
 
 AUDIO_EXTS = {
     # Common
-    ".mp3", ".m4a", ".aac", ".ogg", ".oga", ".wma", ".opus",
-    
+    ".mp3",
+    ".m4a",
+    ".aac",
+    ".ogg",
+    ".oga",
+    ".wma",
+    ".opus",
     # High-Fidelity
-    ".wav", ".flac", ".alac", ".aif", ".aiff", ".aifc", ".ape", ".pcm",
-    
+    ".wav",
+    ".flac",
+    ".alac",
+    ".aif",
+    ".aiff",
+    ".aifc",
+    ".ape",
+    ".pcm",
     # Professional & Logic
-    ".mid", ".midi", ".kar", ".rmi", ".ac3", ".dts", ".dtshd", ".thd",
-    
+    ".mid",
+    ".midi",
+    ".kar",
+    ".rmi",
+    ".ac3",
+    ".dts",
+    ".dtshd",
+    ".thd",
     # Specialized & Legacy
-    ".amr", ".awb", ".gsm", ".ra", ".rm", ".mka", ".au", ".snd",
-    
+    ".amr",
+    ".awb",
+    ".gsm",
+    ".ra",
+    ".rm",
+    ".mka",
+    ".au",
+    ".snd",
     # Playlist & Streaming
-    ".m3u", ".pls", ".asx"
+    ".m3u",
+    ".pls",
+    ".asx",
 }
+
 
 # Opening; this is what you need thonny, xdg-open, and mousepad for
 def open_file(p):
@@ -1365,18 +1707,22 @@ def open_file(p):
     # Everything else -> default handler
     subprocess.Popen(["xdg-open", p])
 
+
 # Clipboard (for the file cut/paste)
 FILE_CLIPBOARD = {"mode": None, "path": None}
+
 
 def copy_file(path):
     global FILE_CLIPBOARD
     FILE_CLIPBOARD["mode"] = "copy"
     FILE_CLIPBOARD["path"] = path
 
+
 def cut_file(path):
     global FILE_CLIPBOARD
     FILE_CLIPBOARD["mode"] = "cut"
     FILE_CLIPBOARD["path"] = path
+
 
 def delete_file(path):
     if os.path.isdir(path):
@@ -1384,6 +1730,7 @@ def delete_file(path):
     else:
         os.remove(path)
     refresh_files()
+
 
 def paste_file():
     if not FILE_CLIPBOARD["path"]:
@@ -1400,8 +1747,10 @@ def paste_file():
     FILE_CLIPBOARD["mode"] = None
     FILE_CLIPBOARD["path"] = None
     refresh_files()
-    
+
+
 # File right-click menu
+
 
 def run_file(p):
     ext = os.path.splitext(p)[1].lower()
@@ -1424,10 +1773,14 @@ def run_file(p):
     # Fallback
     subprocess.Popen(["xdg-open", p])
 
+
 def show_file_menu(event, path, is_exec):
-    menu = tk.Menu(root, tearoff=0,
-                   bg=CURRENT_BG,
-                   fg="#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000")
+    menu = tk.Menu(
+        root,
+        tearoff=0,
+        bg=CURRENT_BG,
+        fg="#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000",
+    )
 
     # Always available
     menu.add_command(label="Open", command=lambda: open_file(path))
@@ -1450,6 +1803,7 @@ def show_file_menu(event, path, is_exec):
     finally:
         menu.grab_release()
 
+
 # --- Fuzzy matching ---
 def fuzzy_score(query, text):
     query = query.lower()
@@ -1466,6 +1820,7 @@ def fuzzy_score(query, text):
 
     return score if qi == len(query) else 0
 
+
 def fuzzy_match(query, choices):
     scored = []
     for c in choices:
@@ -1478,6 +1833,7 @@ def fuzzy_match(query, choices):
 
     # Return only the text values
     return [c for _, c in scored]
+
 
 # File tab UI
 def refresh_files(search_query=None):
@@ -1492,38 +1848,49 @@ def refresh_files(search_query=None):
 
     def go():
         refresh_files()
-        
-    style.configure("My.TButton", 
-                foreground=fg, 
-                background=CURRENT_BG, 
-                font=("Helvetica", 12))
-    
+
+    style.configure(
+        "My.TButton", foreground=fg, background=CURRENT_BG, font=("Helvetica", 12)
+    )
+
     ttk.Button(left_frame, text="Go", command=go).pack(pady=(0, 10))
-    ttk.Button(left_frame, text="New File",
-           command=lambda: create_new_item(path_var.get(), False)).pack(pady=2)
-    
+    ttk.Button(
+        left_frame,
+        text="New File",
+        command=lambda: create_new_item(path_var.get(), False),
+    ).pack(pady=2)
+
     # --- Search Bar ---
     search_var = tk.StringVar()
-    
+
     search_entry = ttk.Entry(left_frame, textvariable=search_var)
     search_entry.pack(fill="x", padx=10, pady=(0, 10))
-    
+
     def do_search(event=None):
         refresh_files(search_query=search_var.get().strip())
-        
+
     def clear_search(event=None):
         search_var.set("")
         refresh_files()
-        
+
     search_entry.bind("<Return>", do_search)
     search_entry.bind("<Escape>", clear_search)
-    
-    ttk.Button(left_frame, text="New Folder",
-               command=lambda: create_new_item(path_var.get(), True)).pack(pady=2)
-    
-    show_hidden_check = ttk.Checkbutton(left_frame, text="Show hidden files", style="My.TButton", variable=show_hidden, command=lambda search_query=search_query: refresh_files(search_query))
+
+    ttk.Button(
+        left_frame,
+        text="New Folder",
+        command=lambda: create_new_item(path_var.get(), True),
+    ).pack(pady=2)
+
+    show_hidden_check = ttk.Checkbutton(
+        left_frame,
+        text="Show hidden files",
+        style="My.TButton",
+        variable=show_hidden,
+        command=lambda search_query=search_query: refresh_files(search_query),
+    )
     show_hidden_check.pack(pady=(0, 10))
-    
+
     # File list
     try:
         if search_query == "../":
@@ -1531,11 +1898,11 @@ def refresh_files(search_query=None):
             refresh_files()
             return
         files = os.listdir(path_var.get())
-        
+
         # Filter hidden files unless toggle is on
         if not show_hidden.get():
             files = [f for f in files if not f.startswith(".")]
-            
+
         if search_query:
             files = fuzzy_match(search_query.lower(), files)
 
@@ -1543,7 +1910,9 @@ def refresh_files(search_query=None):
         tk.Label(left_frame, text="Invalid path", bg=CURRENT_BG, fg=fg).pack()
         return
 
-    files.sort(key=lambda x: (not os.path.isdir(os.path.join(path_var.get(), x)), x.lower())) # Sort files so that directories are first and alphabetically
+    files.sort(
+        key=lambda x: (not os.path.isdir(os.path.join(path_var.get(), x)), x.lower())
+    )  # Sort files so that directories are first and alphabetically
     for f in files:
         full = os.path.join(path_var.get(), f)
         frame = tk.Frame(left_frame, bg=CURRENT_BG)
@@ -1571,13 +1940,13 @@ def refresh_files(search_query=None):
                 icon = icons["file"]
 
         # Label with icon + filename
-        label = tk.Label(frame, text=f"  {f}", image=icon, compound="left",
-                         bg=CURRENT_BG, fg=fg)
+        label = tk.Label(
+            frame, text=f"  {f}", image=icon, compound="left", bg=CURRENT_BG, fg=fg
+        )
         label.image = icon  # prevent garbage collection
         label.pack(side="left")
-        
-        label.bind("<Button-1>", lambda e, p=full: show_preview(p))
 
+        label.bind("<Button-1>", lambda e, p=full: show_preview(p))
 
         # -----------------------------
         # DIRECTORY HANDLING
@@ -1586,7 +1955,7 @@ def refresh_files(search_query=None):
             ttk.Button(
                 frame,
                 text="Open",
-                command=lambda p=full: path_var.set(p) or refresh_files()
+                command=lambda p=full: path_var.set(p) or refresh_files(),
             ).pack(side="right")
             continue
 
@@ -1612,17 +1981,27 @@ def refresh_files(search_query=None):
         # -----------------------------
         # RUN BUTTON (only when valid)
         # -----------------------------
-        is_exec = ( os.access(full, os.X_OK) or full.endswith(".sh") or full.endswith(".desktop") or full.endswith(".py") )
-        if (is_exec):
-            ttk.Button(frame, text="Run", command=lambda p=full: run_file(p)).pack(side="right")
+        is_exec = (
+            os.access(full, os.X_OK)
+            or full.endswith(".sh")
+            or full.endswith(".desktop")
+            or full.endswith(".py")
+        )
+        if is_exec:
+            ttk.Button(frame, text="Run", command=lambda p=full: run_file(p)).pack(
+                side="right"
+            )
 
         # -----------------------------
         # OPEN BUTTON (always there)
         # -----------------------------
 
-        ttk.Button(frame, text="Open", command=lambda p=full: open_file(p)).pack(side="right")
-        
+        ttk.Button(frame, text="Open", command=lambda p=full: open_file(p)).pack(
+            side="right"
+        )
+
         label.bind("<Button-3>", lambda e, p=full, ex=is_exec: show_file_menu(e, p, ex))
+
 
 refresh_files()
 
@@ -1632,23 +2011,24 @@ refresh_files()
 
 dash = tabs["Dashboard"]
 
+
 # Draw dashboard UI
 def update_dashboard():
     for child in dash.winfo_children():
         child.destroy()
-        
+
     add_section(dash, "Dashboard")
 
     fg = "#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000"
 
     # CPU Temp
-    
+
     temps = psutil.sensors_temperatures()
     if temps:
         for name, entries in temps.items():
             for entry in entries:
                 celsius = entry.current
-                fahrenheit = (celsius * 9/5) + 32
+                fahrenheit = (celsius * 9 / 5) + 32
                 temp = f"{celsius:.1f}°C / {fahrenheit:.1f}°F"
                 break
     else:
@@ -1676,25 +2056,30 @@ def update_dashboard():
     # --- Styled Dashboard Layout ---
     row = tk.Frame(dash, bg=CURRENT_BG)
     row.pack(pady=10, anchor="w")
-    
+
     # Color-code based on Fahrenheit
     if fahrenheit < 110:
-        temp_color = "#4CAF50"   # green
+        temp_color = "#4CAF50"  # green
     elif fahrenheit < 140:
-        temp_color = "#FFC107"   # yellow
+        temp_color = "#FFC107"  # yellow
     else:
-        temp_color = "#F44336"   # red
-
+        temp_color = "#F44336"  # red
 
     def add_row(label, value, color=None):
         frame = tk.Frame(dash, bg=CURRENT_BG)
         frame.pack(fill="x", padx=20, pady=5)
 
-        tk.Label(frame, text=label, bg=CURRENT_BG, fg=fg,
-                 font=("TkDefaultFont", 12, "bold")).pack(side="left")
+        tk.Label(
+            frame, text=label, bg=CURRENT_BG, fg=fg, font=("TkDefaultFont", 12, "bold")
+        ).pack(side="left")
 
-        tk.Label(frame, text=value, bg=CURRENT_BG, fg=color if color else fg,
-                 font=("TkDefaultFont", 12)).pack(side="right")
+        tk.Label(
+            frame,
+            text=value,
+            bg=CURRENT_BG,
+            fg=color if color else fg,
+            font=("TkDefaultFont", 12),
+        ).pack(side="right")
 
     add_row("CPU Temp:", temp, temp_color)
     add_row("Memory:", mem)
@@ -1702,6 +2087,7 @@ def update_dashboard():
     add_row("IP Address:", ip)
 
     dash.after(dash_interval.get() * 1000, lambda: run_async(update_dashboard))
+
 
 update_dashboard()
 
@@ -1711,6 +2097,7 @@ update_dashboard()
 
 items = []
 favorites = []
+
 
 def load_favorites():
     global favorites
@@ -1729,60 +2116,63 @@ def load_favorites():
         print("Error loading favorites:", e)
         favorites = []
 
+
 def save_favorites():
     try:
         with open(FAVORITES_FILE, "w") as f:
             json.dump(favorites, f, indent=2)
     except Exception as e:
         print("Error saving favorites:", e)
-        
+
+
 load_favorites()
 
 # -------------------------------
 #  Normal Buttons
 # -------------------------------
 
+
 def add_script_item(tab_name, label, path):
-    items.append({
-        "name": label,
-        "type": "script",
-        "tab": tab_name,
-        "path": path
-    })
+    items.append({"name": label, "type": "script", "tab": tab_name, "path": path})
+
 
 def add_inline_item(tab_name, label, command, kind="info"):
-    items.append({
-        "name": label,
-        "type": "inline",
-        "tab": tab_name,
-        "command": command,
-        "kind": kind
-    })
-    
+    items.append(
+        {
+            "name": label,
+            "type": "inline",
+            "tab": tab_name,
+            "command": command,
+            "kind": kind,
+        }
+    )
+
+
 def add_script_item_plugin(tab_name, label, path):
-    items.append({
-        "name": label,
-        "type": "script",
-        "tab": tab_name,
-        "path": path,
-        "plugin": True
-    })
+    items.append(
+        {"name": label, "type": "script", "tab": tab_name, "path": path, "plugin": True}
+    )
+
 
 def add_inline_item_plugin(tab_name, label, command, kind="info"):
-    items.append({
-        "name": label,
-        "type": "inline",
-        "tab": tab_name,
-        "command": command,
-        "kind": kind,
-        "plugin": True
-    })
+    items.append(
+        {
+            "name": label,
+            "type": "inline",
+            "tab": tab_name,
+            "command": command,
+            "kind": kind,
+            "plugin": True,
+        }
+    )
+
 
 PLUGIN_API = {
     "add_inline": add_inline_item_plugin,
     "add_script": add_script_item_plugin,
-    "add_widget": []   # list of (tab_name, widget_func)
+    "add_widget": [],  # list of (tab_name, widget_func)
 }
+
 
 # Load the plugin
 def load_plugins():
@@ -1798,8 +2188,9 @@ def load_plugins():
             except Exception as e:
                 show_popup(
                     f"Plugin Load Error: {module_name}",
-                    f"Plugin failed during register:\n{e}"
+                    f"Plugin failed during register:\n{e}",
                 )
+
 
 # -------------------------------
 #  Button Tabs
@@ -1825,14 +2216,27 @@ add_inline_item("Developer", "Display Server", "echo $XDG_SESSION_TYPE", kind="i
 add_section(tabs["Network"], "Network Tools")
 add_inline_item("Network", "Show IP Address", "hostname -I", kind="info")
 add_inline_item("Network", "Ping Google", "ping -c 4 google.com", kind="info")
-add_inline_item("Network", "Restart Networking", "sudo systemctl restart NetworkManager", kind="action")
+add_inline_item(
+    "Network",
+    "Restart Networking",
+    "sudo systemctl restart NetworkManager",
+    kind="action",
+)
 
 # --- Maintenance ---
 add_section(tabs["Maintenance"], "Maintenance Tasks")
-add_inline_item("Maintenance", "Update System",
-                "sudo apt update && sudo apt upgrade -y", kind="action")
-add_inline_item("Maintenance", "Clean Packages",
-                "sudo apt autoremove -y && sudo apt clean", kind="action")
+add_inline_item(
+    "Maintenance",
+    "Update System",
+    "sudo apt update && sudo apt upgrade -y",
+    kind="action",
+)
+add_inline_item(
+    "Maintenance",
+    "Clean Packages",
+    "sudo apt autoremove -y && sudo apt clean",
+    kind="action",
+)
 
 
 # -------------------------------
@@ -1844,6 +2248,7 @@ clipboard_tab = tabs["Clipboard"]
 history = []
 last = None
 
+
 # Can only get the very last item copied at startup,
 # but however long the panel is opened it saves
 # everything copied.
@@ -1851,29 +2256,30 @@ def update_clipboard():
     global last, history
     for child in clipboard_tab.winfo_children():
         child.destroy()
-        
+
     try:
         text = pyperclip.paste()
         if text != last and text.strip() != "":
             history.append(text)
             last = text
-            
+
             if len(history) > 15:
                 history.pop(0)
-                
+
     except Exception as e:
         print(str(e))
-                
+
     for item in reversed(history):
         btn = ttk.Button(
             clipboard_tab,
-            text = truncate_output(item.replace("\n", " "), max_chars=97),
-            command = lambda t=item: pyperclip.copy(t)
-            )
+            text=truncate_output(item.replace("\n", " "), max_chars=97),
+            command=lambda t=item: pyperclip.copy(t),
+        )
         btn.pack(fill="x", pady=5)
-        
+
     clipboard_tab.after(1000, update_clipboard)
-    
+
+
 update_clipboard()
 
 # -------------------------------
@@ -1882,13 +2288,17 @@ update_clipboard()
 
 COMMANDS = []
 
+
 def register_command(name, category, description, action):
-    COMMANDS.append({
-        "name": name,
-        "category": category,
-        "description": description,
-        "action": action
-    })
+    COMMANDS.append(
+        {
+            "name": name,
+            "category": category,
+            "description": description,
+            "action": action,
+        }
+    )
+
 
 def register_builtin_commands():
     # Navigation
@@ -1897,7 +2307,7 @@ def register_builtin_commands():
             name=f"Open {tab_name}",
             category="Navigation",
             description=f"Switch to the {tab_name} tab",
-            action=lambda t=tab_name: notebook.select(tabs[t])
+            action=lambda t=tab_name: notebook.select(tabs[t]),
         )
 
     # Settings
@@ -1905,28 +2315,25 @@ def register_builtin_commands():
         "Toggle Theme",
         "Settings",
         "Switch between light and dark mode",
-        lambda: theme_toggle.toggle()
+        lambda: theme_toggle.toggle(),
     )
 
     register_command(
         "Toggle Fuzzy Search",
         "Settings",
         "Enable or disable fuzzy matching",
-        lambda: fuzzy_toggle.toggle()
+        lambda: fuzzy_toggle.toggle(),
     )
 
     register_command(
-        "Reboot",
-        "System",
-        "Restart the System",
-        lambda: subprocess.Popen(["reboot"])
+        "Reboot", "System", "Restart the System", lambda: subprocess.Popen(["reboot"])
     )
 
     register_command(
         "Shutdown",
         "System",
         "Power off the System",
-        lambda: subprocess.Popen(["shutdown", "now"])
+        lambda: subprocess.Popen(["shutdown", "now"]),
     )
 
     # Files
@@ -1934,14 +2341,22 @@ def register_builtin_commands():
         "Open Home Folder",
         "Files",
         "Jump to your home directory",
-        lambda: (path_var.set(BASE_DIR), refresh_files(), notebook.select(tabs["Files"]))
+        lambda: (
+            path_var.set(BASE_DIR),
+            refresh_files(),
+            notebook.select(tabs["Files"]),
+        ),
     )
 
     register_command(
         "Open Plugin Folder",
         "Files",
         "Jump to the plugin directory",
-        lambda: (path_var.set(PLUGIN_DIR), refresh_files(), notebook.select(tabs["Files"]))
+        lambda: (
+            path_var.set(PLUGIN_DIR),
+            refresh_files(),
+            notebook.select(tabs["Files"]),
+        ),
     )
 
     # Developer
@@ -1949,14 +2364,16 @@ def register_builtin_commands():
         "Reload Plugins",
         "Developer",
         "Reload all plugins and refresh UI",
-        lambda: refresh_plugins()
+        lambda: refresh_plugins(),
     )
+
 
 register_builtin_commands()
 
 # -------------------------------
 #  Command Pallete UI
 # -------------------------------
+
 
 def open_command_palette():
     palette = tk.Toplevel(root)
@@ -1967,11 +2384,11 @@ def open_command_palette():
     palette.grab_set()
 
     fg = "#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000"
-    
+
     style.configure("TEntry", padding=5, relief="flat")
-    style.map("TEntry",
-              background=[("active", CURRENT_BG)],
-              foreground=[("active", fg)])
+    style.map(
+        "TEntry", background=[("active", CURRENT_BG)], foreground=[("active", fg)]
+    )
 
     # Search bar
     search_var = tk.StringVar()
@@ -1984,7 +2401,9 @@ def open_command_palette():
     results_frame.pack(fill="both", expand=True)
 
     # Preview panel
-    preview = tk.Label(palette, text="", bg=CURRENT_BG, fg=fg, anchor="nw", justify="left")
+    preview = tk.Label(
+        palette, text="", bg=CURRENT_BG, fg=fg, anchor="nw", justify="left"
+    )
     preview.pack(fill="x", padx=10, pady=5)
 
     def render_results(query=""):
@@ -1996,7 +2415,9 @@ def open_command_palette():
             filtered = fuzzy_match(query.lower(), [cmd["name"] for cmd in COMMANDS])
             filtered_cmds = [cmd for cmd in COMMANDS if cmd["name"] in filtered]
         else:
-            filtered_cmds = [cmd for cmd in COMMANDS if query.lower() in cmd["name"].lower()]
+            filtered_cmds = [
+                cmd for cmd in COMMANDS if query.lower() in cmd["name"].lower()
+            ]
 
         # Group by category
         categories = {}
@@ -2004,8 +2425,13 @@ def open_command_palette():
             categories.setdefault(cmd["category"], []).append(cmd)
 
         for cat, cmds in categories.items():
-            cat_label = tk.Label(results_frame, text=cat, bg=CURRENT_BG, fg=fg,
-                                 font=("TkDefaultFont", 10, "bold"))
+            cat_label = tk.Label(
+                results_frame,
+                text=cat,
+                bg=CURRENT_BG,
+                fg=fg,
+                font=("TkDefaultFont", 10, "bold"),
+            )
             cat_label.pack(anchor="w", padx=10, pady=(5, 0))
 
             for cmd in cmds:
@@ -2017,7 +2443,7 @@ def open_command_palette():
                     anchor="w",
                     relief="flat",
                     highlightthickness=0,
-                    command=lambda c=cmd: (c["action"](), palette.destroy())
+                    command=lambda c=cmd: (c["action"](), palette.destroy()),
                 )
                 btn.pack(fill="x", padx=20, pady=2)
 
@@ -2036,16 +2462,18 @@ def open_command_palette():
 
     search_var.trace_add("write", on_search)
     render_results()
-    
+
 
 # Ctrl+P -> open command palette
 root.bind("<Control-p>", lambda e: open_command_palette())
+
 
 def switch_tab(offset):
     current = notebook.index("current")
     total = len(tab_names)
     new_index = (current + offset) % total
     notebook.select(new_index)
+
 
 # For that ease of use switching he heh
 root.bind("<Control-Tab>", lambda e: switch_tab(1))
@@ -2054,6 +2482,7 @@ root.bind("<Control-Shift-Tab>", lambda e: switch_tab(-1))
 # -------------------------------
 #  Button Renders
 # -------------------------------
+
 
 def add_button_to_tab(tab_name, label, callback):
     tab = tabs[tab_name]
@@ -2065,7 +2494,7 @@ def add_button_to_tab(tab_name, label, callback):
         "type": "inline",
         "tab": tab_name,
         "command": None,
-        "kind": "action"
+        "kind": "action",
     }
 
     btn = ttk.Button(frame, text=label, command=callback)
@@ -2074,7 +2503,7 @@ def add_button_to_tab(tab_name, label, callback):
     # -----------------------------
     # FAVORITE CONTEXT MENU (normal tabs only)
     # -----------------------------
-    
+
     def is_favorite(it):
         if not isinstance(favorites, list):
             return False
@@ -2084,7 +2513,7 @@ def add_button_to_tab(tab_name, label, callback):
         real = next((x for x in items if x["name"] == it["name"]), None)
         if real is None:
             real = it
-                    
+
         if not is_favorite(real):
             favorites.append(real)
             save_favorites()
@@ -2097,19 +2526,20 @@ def add_button_to_tab(tab_name, label, callback):
         refresh_favorites()
 
     def show_fav_menu(event, it=item):
-        menu = tk.Menu(btn, tearoff=0,
-                       bg=CURRENT_BG,
-                       fg="#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000")
+        menu = tk.Menu(
+            btn,
+            tearoff=0,
+            bg=CURRENT_BG,
+            fg="#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000",
+        )
 
         if is_favorite(it):
             menu.add_command(
-                label="Remove from Favorites",
-                command=lambda: remove_from_favorites(it)
+                label="Remove from Favorites", command=lambda: remove_from_favorites(it)
             )
         else:
             menu.add_command(
-                label="Add to Favorites",
-                command=lambda: add_to_favorites(it)
+                label="Add to Favorites", command=lambda: add_to_favorites(it)
             )
 
         menu.tk_popup(event.x_root, event.y_root)
@@ -2118,19 +2548,19 @@ def add_button_to_tab(tab_name, label, callback):
     if tab_name != "Favorites":
         btn.bind("<Button-3>", show_fav_menu)
 
+
 # Refresh favorites tab
 def refresh_favorites():
     tab = tabs["Favorites"]
     for child in tab.winfo_children():
         child.destroy()
-        
+
     add_section(tab, "Favorites")
 
     fg = "#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000"
 
     if not favorites:
-        tk.Label(tab, text="No favorites yet.",
-                 bg=CURRENT_BG, fg=fg).pack(pady=20)
+        tk.Label(tab, text="No favorites yet.", bg=CURRENT_BG, fg=fg).pack(pady=20)
         return
 
     for it in favorites:
@@ -2149,8 +2579,9 @@ def refresh_favorites():
 
     save_favorites()
 
-    
+
 refresh_favorites()
+
 
 # -------------------------------
 #  Plugin Widget Injection
@@ -2165,11 +2596,12 @@ def add_widget_to_tab(tab_widget, widget_func):
 def inject_plugin_widgets():
     if not PLUGINS_READY:
         return
-    
+
     for tab_name, func in PLUGIN_API["add_widget"]:
         widget = func(tabs[tab_name])
         if widget is not None:
             widget.plugin_owned = True
+
 
 run_async(load_plugins)
 
@@ -2180,13 +2612,15 @@ for item in items:
             add_button_to_tab(
                 item["tab"],
                 item["name"],
-                lambda it=item: run_script_with_popup(it["name"], it["path"])
+                lambda it=item: run_script_with_popup(it["name"], it["path"]),
             )
         else:
             add_button_to_tab(
                 item["tab"],
                 item["name"],
-                lambda it=item: run_inline_with_popup(it["name"], it["command"], it["kind"])
+                lambda it=item: run_inline_with_popup(
+                    it["name"], it["command"], it["kind"]
+                ),
             )
 
 # Make plugin widgets
@@ -2199,6 +2633,7 @@ inject_plugin_widgets()
 
 scheduled_tasks: list[dict] = []
 scheduler_running = True
+
 
 def scheduler_loop():
     while scheduler_running:
@@ -2214,6 +2649,7 @@ def scheduler_loop():
                 refresh_task_list()
         time.sleep(1)
 
+
 threading.Thread(target=scheduler_loop, daemon=True).start()
 
 # UI
@@ -2224,8 +2660,9 @@ ttk.Label(sched_frame, text="Schedule a Command").pack(pady=10)
 # Commands dropdown
 command_names = [it["name"] for it in items]
 command_var = tk.StringVar()
-command_dropdown = ttk.Combobox(sched_frame, textvariable=command_var,
-                                values=command_names, state="readonly")
+command_dropdown = ttk.Combobox(
+    sched_frame, textvariable=command_var, values=command_names, state="readonly"
+)
 command_dropdown.pack(pady=5)
 
 # Time entry
@@ -2238,6 +2675,7 @@ time_entry.pack(pady=5)
 scheduler_list_frame = tk.Frame(sched_frame, bg=CURRENT_BG)
 scheduler_list_frame.pack(fill="both", expand=True, pady=10)
 
+
 def refresh_task_list():
     for child in scheduler_list_frame.winfo_children():
         child.destroy()
@@ -2245,16 +2683,18 @@ def refresh_task_list():
     fg = "#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000"
 
     if not scheduled_tasks:
-        tk.Label(scheduler_list_frame, text="No scheduled tasks.",
-                 bg=CURRENT_BG, fg=fg).pack()
+        tk.Label(
+            scheduler_list_frame, text="No scheduled tasks.", bg=CURRENT_BG, fg=fg
+        ).pack()
         return
 
     for task in scheduled_tasks:
         row = tk.Frame(scheduler_list_frame, bg=CURRENT_BG)
         row.pack(fill="x", pady=3)
 
-        label = tk.Label(row, text=f"{task['time']} — {task['name']}",
-                         bg=CURRENT_BG, fg=fg)
+        label = tk.Label(
+            row, text=f"{task['time']} — {task['name']}", bg=CURRENT_BG, fg=fg
+        )
         label.pack(side="left", padx=5)
 
         def cancel_task(t=task):
@@ -2262,6 +2702,7 @@ def refresh_task_list():
             refresh_task_list()
 
         ttk.Button(row, text="Cancel", command=cancel_task).pack(side="right")
+
 
 # Schedule
 def schedule_task():
@@ -2275,17 +2716,20 @@ def schedule_task():
     # Find the command
     for it in items:
         if it["name"] == name:
-            scheduled_tasks.append({
-                "name": it["name"],
-                "type": it["type"],
-                "time": time_str,
-                "command": it.get("command"),
-                "path": it.get("path"),
-                "kind": it.get("kind")
-            })
+            scheduled_tasks.append(
+                {
+                    "name": it["name"],
+                    "type": it["type"],
+                    "time": time_str,
+                    "command": it.get("command"),
+                    "path": it.get("path"),
+                    "kind": it.get("kind"),
+                }
+            )
             refresh_task_list()
             show_popup("Scheduled", f"{name} scheduled for {time_str}")
             return
+
 
 ttk.Button(sched_frame, text="Schedule", command=schedule_task).pack(pady=10)
 
@@ -2308,7 +2752,7 @@ search_entry.pack(fill="x", padx=20, pady=(0, 10))
 results_container = tk.Frame(search_frame, bg=CURRENT_BG)
 results_container.pack(fill="both", expand=True, padx=10, pady=10)
 
-#History
+# History
 search_history = []
 MAX_HISTORY = 5
 
@@ -2329,6 +2773,7 @@ def clear_search_results():
     for child in results_container.winfo_children():
         child.destroy()
 
+
 # --- Highlight ---
 def highlight(text, query):
     q = query.lower()
@@ -2337,7 +2782,9 @@ def highlight(text, query):
     if start == -1:
         return text
     end = start + len(query)
-    return text[:start] + "**" + text[start:end] + "**" + text[end:] # Listen this is not to try to markdonw the buttons the ** is intentional!
+    return (
+        text[:start] + "**" + text[start:end] + "**" + text[end:]
+    )  # Listen this is not to try to markdonw the buttons the ** is intentional!
 
 
 # --- Logic ---
@@ -2348,23 +2795,27 @@ def do_search(*args):
     fg = "#FFFFFF" if CURRENT_BG != "#FFFFFF" else "#000000"
     results_container.configure(bg=CURRENT_BG)
 
-    #al ittle bit of easte r eg gs spac ed out so no ct rl f ing them
+    # al ittle bit of easte r eg gs spac ed out so no ct rl f ing them
     if query == "steamy noodle bowl":
         print("HOW TF DID YOU KNOW?")
-        
+
     if query == "a website?":
         print("Yes, thesteamynoodlebowl.netlify.app")
 
     # Show history when no current search
     if not query:
         if search_history:
-            hist_label = tk.Label(results_container, text="Recent Searches:",
-                                  bg=CURRENT_BG, fg=fg)
+            hist_label = tk.Label(
+                results_container, text="Recent Searches:", bg=CURRENT_BG, fg=fg
+            )
             hist_label.pack(anchor="w", pady=(0, 5))
 
             for item in reversed(search_history):
-                btn = ttk.Button(results_container, text=item,
-                                 command=lambda q=item: search_var.set(q))
+                btn = ttk.Button(
+                    results_container,
+                    text=item,
+                    command=lambda q=item: search_var.set(q),
+                )
                 btn.pack(fill="x", pady=2)
         return
 
@@ -2375,89 +2826,110 @@ def do_search(*args):
 
     # Commands
     for cmd in COMMANDS:
-        sources.append({
-            "name": cmd["name"],
-            "tab": "Commands",
-            "type": "command",
-            "command": cmd["action"],
-            "description": cmd["description"]
-        })
-
+        sources.append(
+            {
+                "name": cmd["name"],
+                "tab": "Commands",
+                "type": "command",
+                "command": cmd["action"],
+                "description": cmd["description"],
+            }
+        )
 
     # Tabs
     for tab_name in tabs:
-        sources.append({
-            "name": tab_name,
-            "tab": "Tabs",
-            "type": "tab",
-            "command": lambda t=tab_name: notebook.select(tabs[t])
-        })
+        sources.append(
+            {
+                "name": tab_name,
+                "tab": "Tabs",
+                "type": "tab",
+                "command": lambda t=tab_name: notebook.select(tabs[t]),
+            }
+        )
 
     # Plugins
     for f in os.listdir(PLUGIN_DIR):
-        sources.append({
-            "name": f,
-            "tab": "Plugins",
-            "type": "plugin",
-            "path": os.path.join(PLUGIN_DIR, f),
-            "command": lambda p=os.path.join(PLUGIN_DIR, f): (
-                path_var.set(PLUGIN_DIR),
-                refresh_files(),
-                notebook.select(tabs["Files"])
-            )
-        })
+        sources.append(
+            {
+                "name": f,
+                "tab": "Plugins",
+                "type": "plugin",
+                "path": os.path.join(PLUGIN_DIR, f),
+                "command": lambda p=os.path.join(PLUGIN_DIR, f): (
+                    path_var.set(PLUGIN_DIR),
+                    refresh_files(),
+                    notebook.select(tabs["Files"]),
+                ),
+            }
+        )
 
     def get_dirname(p):
         if os.path.isdir(p):
             return p
-        
+
         return os.path.dirname(p)
 
     # Files (non-recursive for now)
     for f in os.listdir(path_var.get()):
-        sources.append({
-            "name": f,
-            "tab": "Files",
-            "type": "file",
-            "path": os.path.join(path_var.get(), f),
-            "command": lambda p=os.path.join(path_var.get(), f): (
-                print(p),
-                path_var.set(get_dirname(p)),
-                print(path_var.get()),
-                refresh_files(),
-                notebook.select(tabs["Files"])
-            )
-        })
+        sources.append(
+            {
+                "name": f,
+                "tab": "Files",
+                "type": "file",
+                "path": os.path.join(path_var.get(), f),
+                "command": lambda p=os.path.join(path_var.get(), f): (
+                    print(p),
+                    path_var.set(get_dirname(p)),
+                    print(path_var.get()),
+                    refresh_files(),
+                    notebook.select(tabs["Files"]),
+                ),
+            }
+        )
 
     # Fuzzy yay
     names = [
-        s.get("name", {}).get("name") if isinstance(s.get("name"), dict) 
-        else s.get("name", "Unknown") 
+        (
+            s.get("name", {}).get("name")
+            if isinstance(s.get("name"), dict)
+            else s.get("name", "Unknown")
+        )
         for s in sources
     ]
 
-    
-    matches = fuzzy_match(query, names) if FUZZY_ENABLED else [
-        n for n in names if query in n.lower()
-    ]
+    matches = (
+        fuzzy_match(query, names)
+        if FUZZY_ENABLED
+        else [n for n in names if query in n.lower()]
+    )
 
     if not matches:
-        lbl = tk.Label(results_container,
-                       text="No matches.\nTry to search for files, plugins, commands, tabs",
-                       bg=CURRENT_BG, fg=fg)
+        lbl = tk.Label(
+            results_container,
+            text="No matches.\nTry to search for files, plugins, commands, tabs",
+            bg=CURRENT_BG,
+            fg=fg,
+        )
         lbl.pack(pady=10)
         return
 
     # Map back to full objects
     # Get the match
     matched_items = [
-        next((s for s in sources if (s["name"]["name"] if isinstance(s["name"], dict) else s["name"]) == m), None) 
+        next(
+            (
+                s
+                for s in sources
+                if (s["name"]["name"] if isinstance(s["name"], dict) else s["name"])
+                == m
+            ),
+            None,
+        )
         for m in matches
     ]
 
     # Filter out any Nones
     matched_items = [item for item in matched_items if item is not None]
-
 
     # Group them
     grouped = {}
@@ -2466,15 +2938,24 @@ def do_search(*args):
 
     # Rendering
     for tab_name, group in grouped.items():
-        header = tk.Label(results_container, text=tab_name,
-                          bg=CURRENT_BG, fg=fg, font=("TkDefaultFont", 10, "bold"))
+        header = tk.Label(
+            results_container,
+            text=tab_name,
+            bg=CURRENT_BG,
+            fg=fg,
+            font=("TkDefaultFont", 10, "bold"),
+        )
         header.pack(anchor="w", pady=(10, 2))
 
         for it in group:
             outer = tk.Frame(results_container, bg=CURRENT_BG)
             outer.pack(fill="x", pady=2)
-            
-            to_match = it.get("name", {}).get("name") if isinstance(it.get("name"), dict) else it.get("name", "Unknown")
+
+            to_match = (
+                it.get("name", {}).get("name")
+                if isinstance(it.get("name"), dict)
+                else it.get("name", "Unknown")
+            )
             display = highlight(to_match, query)
 
             def run_and_record(it=it):
@@ -2519,10 +3000,14 @@ def do_search(*args):
                 else:
                     print(f"Error: No executable command found for {it.get('name')}")
 
+            ttk.Button(outer, text=display, command=lambda: run_and_record()).pack(
+                fill="x"
+            )
 
-            ttk.Button(outer, text=display, command=lambda: run_and_record()).pack(fill="x")
 
-search_entry.bind("<Escape>", lambda e: (search_var.set(""), clear_search_results(), do_search())) # Clear and reset
+search_entry.bind(
+    "<Escape>", lambda e: (search_var.set(""), clear_search_results(), do_search())
+)  # Clear and reset
 
 search_var.trace_add("write", do_search)
 
