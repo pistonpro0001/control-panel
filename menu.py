@@ -1098,7 +1098,7 @@ def refresh_files(search_query=None):
         tk.Label(left_frame, text="Invalid path", bg=CURRENT_BG, fg=fg).pack()
         return
 
-    files.sort(key=lambda x: not os.path.isdir(os.path.join(path_var.get(), x))) # Sort files so that directories are first
+    files.sort(key=lambda x: (not os.path.isdir(os.path.join(path_var.get(), x)), x.lower())) # Sort files so that directories are first and alphabetically
     for f in files:
         full = os.path.join(path_var.get(), f)
         frame = tk.Frame(left_frame, bg=CURRENT_BG)
