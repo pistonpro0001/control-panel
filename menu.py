@@ -137,7 +137,6 @@ class PanelContext:
 #  Theme Handling
 # -------------------------------
 
-
 def load_theme():
     with open(THEME_FILE, "r") as f:
         return f.read().strip()
@@ -148,6 +147,7 @@ def save_theme(theme):
 
 if not os.path.exists(THEME_FILE):
     save_theme("light")
+    
 def apply_theme():
     global CURRENT_BG
     theme = load_theme()
@@ -192,7 +192,7 @@ def apply_theme():
 #  Popups + Command Execution
 # -------------------------------
 
-def truncate_output(text, max_lines=15, max_chars=500):
+def truncate_output(text, max_lines=30, max_chars=1000):
     if not text:
         return ""
 
