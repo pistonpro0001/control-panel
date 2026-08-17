@@ -853,7 +853,7 @@ def clear_preview():
         preview_frame = None
 
 
-# Largest function by far! Around 450 lines! Not something to be proud of, but still!
+# Largest function by far! Around 580 lines! Not something to be proud of, but still!
 def show_preview(path):
     global preview_frame
     # Clear old preview
@@ -974,9 +974,7 @@ def show_preview(path):
             lbl.pack(pady=10)
 
             cap = cv2.VideoCapture(path)
-            fps = cap.get(
-                cv2.CAP_PROP_FPS
-            )  # Get frames per second of the video
+            fps = cap.get(cv2.CAP_PROP_FPS)  # Get fps of the video
 
             audio_loaded = False
             try:
@@ -1002,9 +1000,7 @@ def show_preview(path):
 
                 # Calculate the exact frame target based on audio position
                 if audio_loaded:
-                    # Pygame returns time in milliseconds
                     current_millis = pygame.mixer.music.get_pos()
-                    # Calculate target frame: (millis / 1000) * frames per second
                     target_frame = int((current_millis / 1000.0) * fps)
                     cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
 
@@ -1018,10 +1014,9 @@ def show_preview(path):
                     lbl.configure(image=tkimg)
                     lbl.image = tkimg
 
-                    # Schedule the next check (runs fast to keep up with position)
+                    # Schedule the next check (runs fast)
                     lbl.after(15, stream)
                 else:
-                    # Loop video and audio together at the end
                     cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                     if audio_loaded:
                         try:
@@ -1099,7 +1094,6 @@ def show_preview(path):
             )
             listbox.pack(fill="both", expand=True, padx=10, pady=5)
 
-            # Insert the clean song titles into the visual list
             for title in song_titles:
                 listbox.insert(tk.END, title)
 
@@ -1109,7 +1103,6 @@ def show_preview(path):
                     index = selection[0]
                     target = playlist_items[index]
 
-                    # Dual-stream YouTube extraction
                     if "youtube.com" in target or "youtu.be" in target:
                         try:
                             for widget in preview_frame.winfo_children():
@@ -1148,7 +1141,6 @@ def show_preview(path):
                                                 "Could not allocate a free temporary file slot."
                                             )
 
-                                    # Blocking Download
                                     subprocess.run(
                                         [
                                             "yt-dlp",
@@ -1165,7 +1157,6 @@ def show_preview(path):
                                         check=True,
                                     )
 
-                                    # Blocking Audio Extraction
                                     subprocess.run(
                                         [
                                             "ffmpeg",
@@ -1186,7 +1177,6 @@ def show_preview(path):
                                         check=True,
                                     )
 
-                                    # Safe pass back to main for playback initiation
                                     if preview_frame.winfo_exists():
                                         preview_frame.after(
                                             0,
@@ -1206,14 +1196,12 @@ def show_preview(path):
                                             ),
                                         )
 
-                            # Media initialization and video looping
                             def start_playback(
                                 temp_video, temp_audio, caching_lbl
                             ):
                                 if caching_lbl.winfo_exists():
                                     caching_lbl.destroy()
 
-                                # Global scope ensures cv2 capture reference survives outside thread block
                                 global cap
                                 cap = cv2.VideoCapture(temp_video)
 
@@ -1324,7 +1312,7 @@ def show_preview(path):
                             handle_thread_error(e)
                             return
 
-                    # Normal local file fallback
+                    # Normal file
                     if not os.path.isabs(target) and not target.startswith(
                         "http"
                     ):
@@ -1793,6 +1781,7 @@ def delete_file(path):
 
 
 def paste_file():
+    global FILE_CLIPBOARD
     if not FILE_CLIPBOARD["path"]:
         return
 
