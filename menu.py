@@ -1135,7 +1135,7 @@ def refresh_files(search_query=None):
         def open_file(p):
             ext = os.path.splitext(p)[1].lower()
 
-            # Python files -> Ttonny
+            # Python files -> Thonny
             if ext == ".py":
                 subprocess.Popen(["thonny", p])
                 return
