@@ -970,7 +970,6 @@ def show_preview(path):
                     # Dual-stream YouTube extraction
                     if "youtube.com" in target or "youtu.be" in target:
                         try:
-                            # 1. Main Thread: Clear previous UI elements safely
                             for widget in preview_frame.winfo_children():
                                 if widget != close_btn: 
                                     widget.destroy()
@@ -979,7 +978,6 @@ def show_preview(path):
                             lbl.pack(pady=20)
                             preview_frame.update()
 
-                            # 2. Worker Definition: Background task for downloading only
                             def run_yt_worker(target_url, label_widget):
                                 try:
                                     video_base = "/tmp/firecenter_yt_video"
@@ -1016,7 +1014,7 @@ def show_preview(path):
                                     if preview_frame.winfo_exists():
                                         preview_frame.after(0, lambda: handle_thread_error(thread_err))
 
-                            # 3. Main Thread Callback: Media initialization and video looping
+                            # Media initialization and video looping
                             def start_playback(temp_video, temp_audio, caching_lbl):
                                 if caching_lbl.winfo_exists():
                                     caching_lbl.destroy()
@@ -1103,7 +1101,6 @@ def show_preview(path):
                                 err_lbl.pack(pady=50)
                                 close_btn.configure(command=clear_preview)
 
-                            # 4. Thread Activation: Fire up background worker with fixed syntax
                             yt_thread = threading.Thread(target=run_yt_worker, args=(target, lbl), daemon=True)
                             yt_thread.start()
                             return
