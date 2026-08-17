@@ -287,7 +287,7 @@ def load_icon(name):
     img = Image.open(ICON_PATH + name).resize(ICON_SIZE, Image.LANCZOS)
     return ImageTk.PhotoImage(img)
 
-icons = { "folder": load_icon("folder.png"), "file": load_icon("file.png"), "script": load_icon("script.png"), "image": load_icon("image.png"), "exec": load_icon("exec.png"), }
+icons = { "folder": load_icon("folder.png"), "file": load_icon("file.png"), "script": load_icon("script.png"), "image": load_icon("image.png"), "exec": load_icon("exec.png"), "video": load_icon("video.png") }
 
 style = ttk.Style()
 
@@ -967,6 +967,25 @@ TEXT_EXTS = {
     ".gitignore", ".dockerignore", ".editorconfig"
 }
 
+VIDEO_EXTS = {
+    # Common Web & Standard Containers
+    ".mp4", ".m4v", ".mov", ".qt", ".avi", ".wmv", ".asf", 
+    ".mpg", ".mpeg", ".m1v", ".m2v", ".mpv", ".mpe",
+    
+    # Modern & High Efficiency
+    ".webm", ".mkv", ".flv", ".f4v", ".f4p", ".f4a", ".f4b",
+    ".ogv", ".ogx", ".divx", ".xvid",
+    
+    # Professional & Broadcast
+    ".mxf", ".m2ts", ".mts", ".ts", ".tsv", ".m2p", ".ps",
+    ".vob", ".evo", ".mod", ".tod", ".dv", ".dvc",
+    
+    # Mobile & Legacy
+    ".3gp", ".3g2", ".3gpp", ".3gpp2", ".rm", ".rmvb", ".amv", ".nsv",
+    
+    # Playlist & Streaming Descriptors
+    ".m3u8", ".ism", ".ismv", ".m3u"
+}
 
 # File tab UI
 def refresh_files(search_query=None):
@@ -1048,6 +1067,8 @@ def refresh_files(search_query=None):
                 icon = icons["script"]
             elif ext in IMAGE_EXTS:
                 icon = icons["image"]
+            elif ext in VIDEO_EXTS:
+                icon = icons["video"]
             elif os.access(full, os.X_OK) or ext == ".desktop":
                 icon = icons["exec"]
             else:
