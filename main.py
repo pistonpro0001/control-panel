@@ -1877,10 +1877,10 @@ def fuzzy_match(query, choices):
         if s > 0:
             scored.append((s, c))
 
-    # Sort by score descending
+    # ORDER BY score DESC
     scored.sort(reverse=True, key=lambda x: x[0])
 
-    # Return only the text values
+    # Return the text
     return [c for _, c in scored]
 
 
@@ -2036,25 +2036,6 @@ def refresh_files(search_query=None, up=False):
                 command=lambda p=full: path_var.set(p) or refresh_files(),
             ).pack(side="right")
             continue
-
-        # -----------------------------
-        # FILE HANDLING
-        # -----------------------------
-        def open_file(p):
-            ext = os.path.splitext(p)[1].lower()
-
-            # Python files -> Thonny
-            if ext == ".py":
-                subprocess.Popen(["thonny", p])
-                return
-
-            # Text-based files -> mousepad
-            if ext in TEXT_EXTS:
-                subprocess.Popen(["mousepad", p])
-                return
-
-            # Everything else -> default handler
-            subprocess.Popen(["xdg-open", p])
 
         # -----------------------------
         # RUN BUTTON (only when valid)
