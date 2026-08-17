@@ -1151,18 +1151,13 @@ def refresh_files(search_query=None):
         def open_file(p):
             ext = os.path.splitext(p)[1].lower()
 
-            # Python files -> Thonny
+            # Python files -> Ttonny
             if ext == ".py":
                 subprocess.Popen(["thonny", p])
                 return
 
-            # Text-based files -> Mousepad
-            text_exts = [
-                ".txt", ".md", ".json", ".csv", ".ini", ".cfg",
-                ".log", ".yaml", ".yml", ".xml", ".html", ".css",
-                ".js", ".c", ".cpp", ".h", ".sh"
-            ]
-            if ext in text_exts:
+            # Text-based files -> mousepad
+            if ext in TEXT_EXTS:
                 subprocess.Popen(["mousepad", p])
                 return
 
