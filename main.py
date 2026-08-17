@@ -969,111 +969,148 @@ def show_preview(path):
                     
                     # Dual-stream YouTube extraction
                     if "youtube.com" in target or "youtu.be" in target:
-                        
                         try:
-                            # Clear previous playlist widgets
+                            # 1. Main Thread: Clear previous UI elements safely
                             for widget in preview_frame.winfo_children():
                                 if widget != close_btn: 
                                     widget.destroy()
-
+                            
                             lbl = tk.Label(preview_frame, text="⏳ Caching stream to /tmp...", bg=CURRENT_BG, fg=fg)
                             lbl.pack(pady=20)
                             preview_frame.update()
 
-                            video_base = "/tmp/firecenter_yt_video"
-                            audio_base = "/tmp/firecenter_yt_audio"
+                            # 2. Worker Definition: Background task for downloading only
+                            def run_yt_worker(target_url, label_widget):
+                                try:
+                                    video_base = "/tmp/firecenter_yt_video"
+                                    audio_base = "/tmp/firecenter_yt_audio"
 
-                            index = 0
-                            while True:
-                                temp_video = f"{video_base}_{index}.mp4"
-                                temp_audio = f"{audio_base}_{index}.wav"
-                                if not os.path.exists(temp_video) and not os.path.exists(temp_audio):
-                                    break
-                                index += 1
-                                if index > 1000:  # Emergency safety exit
-                                    raise IOError("Could not allocate a free temporary file slot in /tmp.")
+                                    index = 0
+                                    while True:
+                                        temp_video = f"{video_base}_{index}.mp4"
+                                        temp_audio = f"{audio_base}_{index}.wav"
+                                        if not os.path.exists(temp_video) and not os.path.exists(temp_audio):
+                                            break
+                                        index += 1
+                                        if index > 1000:
+                                            raise IOError("Could not allocate a free temporary file slot.")
 
-                            # Tell yt-dlp to download the video but avoid av1
-                            subprocess.run(
-                                ["yt-dlp", "-f", "bestvideo[vcodec^=avc]+bestaudio/best[ext=mp4]", 
-                                 "-o", temp_video, "--merge-output-format", "mp4", target],
-                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
-                            )
+                                    # Blocking Download
+                                    subprocess.run(
+                                        ["yt-dlp", "-f", "bestvideo[vcodec^=avc]+bestaudio/best[ext=mp4]", 
+                                         "-o", temp_video, "--merge-output-format", "mp4", target_url],
+                                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
+                                    )
 
-                            # Rip the audio out to a clean WAV file for Pygame
-                            subprocess.run(
-                                ['ffmpeg', '-y', '-i', temp_video, '-vn', '-acodec', 'pcm_s16le', '-ar', '44100', '-ac', '2', temp_audio],
-                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
-                            )
+                                    # Blocking Audio Extraction
+                                    subprocess.run(
+                                        ['ffmpeg', '-y', '-i', temp_video, '-vn', '-acodec', 'pcm_s16le', '-ar', '44100', '-ac', '2', temp_audio],
+                                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
+                                    )
 
-                            cap = cv2.VideoCapture(temp_video)
-                            
-                            pygame.mixer.music.load(temp_audio)
-                            pygame.mixer.music.play()
+                                    # Safe pass back to the Main Thread for playback initiation
+                                    if preview_frame.winfo_exists():
+                                        preview_frame.after(0, lambda: start_playback(temp_video, temp_audio, label_widget))
 
-                            lbl.destroy()
-                            lbl = tk.Label(preview_frame, bg=CURRENT_BG)
-                            lbl.pack(pady=10)
+                                except Exception as thread_err:
+                                    if preview_frame.winfo_exists():
+                                        preview_frame.after(0, lambda: handle_thread_error(thread_err))
 
-                            def stream():
-                                if not preview_frame.winfo_exists():
-                                    cap.release()
+                            # 3. Main Thread Callback: Media initialization and video looping
+                            def start_playback(temp_video, temp_audio, caching_lbl):
+                                if caching_lbl.winfo_exists():
+                                    caching_lbl.destroy()
+
+                                # Global scope ensures cv2 capture reference survives outside thread block
+                                global cap
+                                cap = cv2.VideoCapture(temp_video)
+                                
+                                pygame.mixer.music.load(temp_audio)
+                                pygame.mixer.music.play()
+
+                                play_lbl = tk.Label(preview_frame, bg=CURRENT_BG)
+                                play_lbl.pack(pady=10)
+
+                                def stream():
+                                    if not preview_frame.winfo_exists() or not play_lbl.winfo_exists():
+                                        cleanup(temp_video, temp_audio)
+                                        return
+                                    
+                                    current_millis = pygame.mixer.music.get_pos()
+                                    if current_millis < 0:
+                                        loop_media()
+                                        return
+
+                                    fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+                                    target_frame = int((current_millis / 1000.0) * fps)
+                                    
+                                    current_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
+                                    while current_frame < target_frame:
+                                        if not cap.grab():
+                                            break
+                                        current_frame += 1
+                                    
+                                    ret, frame = cap.read()
+                                    if ret:
+                                        cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                                        img = Image.fromarray(cv2image)
+                                        img.thumbnail((280, 280))
+                                        
+                                        tkimg = ImageTk.PhotoImage(image=img)
+                                        play_lbl.configure(image=tkimg)
+                                        play_lbl.image = tkimg
+                                        play_lbl.after(10, stream)
+                                    else:
+                                        loop_media()
+
+                                def loop_media():
+                                    if play_lbl.winfo_exists():
+                                        cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                                        try: 
+                                            pygame.mixer.music.play()
+                                        except: 
+                                            pass
+                                        play_lbl.after(10, stream)
+
+                                def stop_video():
+                                    cleanup(temp_video, temp_audio)
+                                    clear_preview()
+
+                                close_btn.configure(command=stop_video)
+                                stream()
+
+                            def cleanup(v_file, a_file):
+                                global cap
+                                try: cap.release()
+                                except: pass
+                                try:
                                     pygame.mixer.music.stop()
-                                    for f in [temp_video, temp_audio]:
+                                    pygame.mixer.music.unload()
+                                except: pass
+                                for f in [v_file, a_file]:
+                                    try:
                                         if os.path.exists(f): os.remove(f)
-                                    return
-                                
-                                # Calculate target frame based on real-time audio position
-                                current_millis = pygame.mixer.music.get_pos()
-                                fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
-                                target_frame = int((current_millis / 1000.0) * fps)
-                                
-                                # Force OpenCV to skip ahead to match the audio clock
-                                current_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
-                                while current_frame < target_frame:
-                                    cap.grab()  # Grabs the frame fast without decoding it
-                                    current_frame += 1
-                                
-                                # Read and render the correctly aligned frame
-                                ret, frame = cap.read()
-                                if ret:
-                                    cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                                    img = Image.fromarray(cv2image)
-                                    img.thumbnail((280, 280))
-                                    
-                                    tkimg = ImageTk.PhotoImage(image=img)
-                                    lbl.configure(image=tkimg)
-                                    lbl.image = tkimg
-                                    
-                                    # Fast polling to keep checking the audio clock
-                                    lbl.after(10, stream)
-                                else:
-                                    # Loop video and audio together
-                                    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-                                    try: pygame.mixer.music.play()
                                     except: pass
-                                    lbl.after(10, stream)
 
-                            def stop_video():
-                                cap.release()
-                                pygame.mixer.music.stop()
-                                for f in [temp_video, temp_audio]:
-                                    if os.path.exists(f): os.remove(f)
-                                clear_preview()
+                            def handle_thread_error(err):
+                                for widget in preview_frame.winfo_children():
+                                    if widget != close_btn: 
+                                        widget.destroy()
+                                err_lbl = tk.Label(
+                                    preview_frame, text=f"Youtube Preview error:\n{err}",
+                                    bg=CURRENT_BG, fg=fg, font=("TkDefaultFont", 10), wraplength=250
+                                )
+                                err_lbl.pack(pady=50)
+                                close_btn.configure(command=clear_preview)
 
-                            close_btn.configure(command=stop_video)
-                            stream()
+                            # 4. Thread Activation: Fire up background worker with fixed syntax
+                            yt_thread = threading.Thread(target=run_yt_worker, args=(target, lbl), daemon=True)
+                            yt_thread.start()
                             return
                             
                         except Exception as e:
-                            lbl = tk.Label(
-                                preview_frame,
-                                text=f"Youtube Preview error: {e}",
-                                bg=CURRENT_BG,
-                                fg=fg,
-                                font=("TkDefaultFont", 12),
-                            )
-                            lbl.pack(pady=50)
+                            handle_thread_error(e)
+                            return
                             
                     # Normal local file fallback
                     if not os.path.isabs(target) and not target.startswith("http"):
@@ -1801,7 +1838,7 @@ add_inline_item("Maintenance", "Clean Packages",
 
 
 # -------------------------------
-#  Clipboard (normal copy/paste)
+#  Clipboard
 # -------------------------------
 
 clipboard_tab = tabs["Clipboard"]
@@ -2012,7 +2049,7 @@ def switch_tab(offset):
     new_index = (current + offset) % total
     notebook.select(new_index)
 
-# For that ease of use switching
+# For that ease of use switching he heh
 root.bind("<Control-Tab>", lambda e: switch_tab(1))
 root.bind("<Control-Shift-Tab>", lambda e: switch_tab(-1))
 
