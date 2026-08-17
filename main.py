@@ -374,13 +374,15 @@ panel = PanelContext(root, notebook, tabs)
 # Ctrl+S  ->  jump to Search tab
 root.bind("<Control-s>", lambda e: notebook.select(tabs["Search"]))
 
+theme_toggle: ToggleSwitch | None = None
 # Ctrl+T  ->  toggle theme
-root.bind("<Control-t>", lambda e: theme_toggle.toggle())
+root.bind("<Control-t>", lambda e: theme_toggle.toggle()) # type: ignore[union-attr]
 
+path_var: tk.StringVar | None = None
 # Ctrl+F  ->  open plugin folder in Files tab
 root.bind("<Control-f>", lambda e: (
     notebook.select(tabs["Files"]),
-    path_var.set(PLUGIN_DIR),
+    path_var.set(PLUGIN_DIR), # type: ignore[union-attr, func-returns-value]
     refresh_files()
 ))
 
@@ -2196,7 +2198,7 @@ inject_plugin_widgets()
 #  Scheduler
 # -------------------------------
 
-scheduled_tasks = []
+scheduled_tasks: list[dict] = []
 scheduler_running = True
 
 def scheduler_loop():
@@ -2519,7 +2521,7 @@ def do_search(*args):
                     print(f"Error: No executable command found for {it.get('name')}")
 
 
-            ttk.Button(outer, text=display, command=run_and_record).pack(fill="x")
+            ttk.Button(outer, text=display, command=lambda: run_and_record()).pack(fill="x")
 
 search_entry.bind("<Escape>", lambda e: (search_var.set(""), clear_search_results(), do_search())) # Clear and reset
 
