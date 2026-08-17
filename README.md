@@ -3,7 +3,7 @@
 This is the code to have full control of your system, in a sleek and stylish manner! Made entirely in Python 3.
 
 ## Supported Systems
-v1 is very limited so far, so here are the requirements:
+V1 is very limited so far, so here are the requirements:
 
 ### OS
 Any version of Raspberry Pi OS (32 or 64 bit)\
@@ -20,7 +20,7 @@ A standard Linux desktop environment (XFCE, LXDE, MATE, GNOME, KDE, etc.)
 
 ## Setup
 First, you're going to have to install [Python 3.9](https://www.reddit.com/r/learnpython/comments/n97okh/how_do_i_install_python_391_on_ubuntu_2004/).\
-Next, head to your terminal to install the dependecies.
+Next, head to your terminal to install the dependencies.
 
 ### Installation
 All of the python modules you need can be installed with one command:\
