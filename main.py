@@ -1894,7 +1894,7 @@ def fuzzy_match(query, choices):
 
 
 # File tab UI
-def refresh_files(search_query=None):
+def refresh_files(search_query=None, up=False):
     for child in left_frame.winfo_children():
         child.destroy()
 
@@ -1904,8 +1904,14 @@ def refresh_files(search_query=None):
     entry = ttk.Entry(left_frame, textvariable=path_var)
     entry.pack(fill="x", padx=10, pady=10)
 
+    if up:
+        path_var.set(os.path.dirname(path_var.get()))
+
     def go():
         refresh_files()
+
+    def up():
+        refresh_files(up=True)
 
     style.configure(
         "My.TButton",
@@ -1920,6 +1926,7 @@ def refresh_files(search_query=None):
         text="New File",
         command=lambda: create_new_item(path_var.get(), False),
     ).pack(pady=2)
+    ttk.Button(left_frame, text="Up", command=up).pack(pady=(0, 10))
 
     # --- Search Bar ---
     search_var = tk.StringVar()
@@ -2004,16 +2011,26 @@ def refresh_files(search_query=None):
                 icon = icons["file"]
 
         # Label with icon + filename
+        item_container = tk.Frame(frame, bg=CURRENT_BG)
+        item_container.pack(side="left", fill="x", expand=True)
+
+        top_line = ttk.Separator(item_container, orient="horizontal")
+        top_line.pack(fill="x", side="top")
+
         label = tk.Label(
-            frame,
+            item_container,
             text=f"  {f}",
             image=icon,
             compound="left",
             bg=CURRENT_BG,
             fg=fg,
+            anchor="w",
         )
-        label.image = icon  # prevent garbage collection
-        label.pack(side="left")
+        label.image = icon
+        label.pack(side="top", pady=2, fill="x", anchor="w")
+
+        bottom_line = ttk.Separator(item_container, orient="horizontal")
+        bottom_line.pack(fill="x", side="top")
 
         label.bind("<Button-1>", lambda e, p=full: show_preview(p))
 
