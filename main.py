@@ -47,7 +47,7 @@ import pygame
 # Global path variables
 
 HOME_DIR = os.path.dirname(os.path.abspath(__file__)) + "/"
-BASE_DIR = (
+BASE_DIR = (e
     os.environ.get("SUDO_USER_HOME")
     or (f"/home/{os.environ.get('SUDO_USER')}" if os.environ.get("SUDO_USER") else None)
     or os.path.expanduser("~")
@@ -348,7 +348,7 @@ def load_icon(name):
     try:
         img = Image.open(ICON_PATH + name).resize(ICON_SIZE, Image.LANCZOS)
         return ImageTk.PhotoImage(img)
-    except:
+    except Exception:
         print(
             "Something went wrong loading the icons. Check that they ALL exist (in the icons/ folder)."
         )
@@ -854,7 +854,7 @@ def show_preview(path):
             lbl.image = tkimg
             lbl.pack(pady=10)
             return
-        except:
+        except Exception:
             pass
 
     # --- SVG Preview (Zero dependencies! Only tkinterweb) ---
@@ -946,7 +946,7 @@ def show_preview(path):
             except pygame.error:
                 lbl = tk.Label(
                     preview_frame,
-                    text=f"Pygame could not decode the audio track for this video format. Try a different video extension.",
+                    text="Pygame could not decode the audio track for this video format. Try a different video extension.",
                     bg=CURRENT_BG,
                     fg=fg,
                     font=("TkDefaultFont", 12),
@@ -986,7 +986,7 @@ def show_preview(path):
                     if audio_loaded:
                         try:
                             pygame.mixer.music.play()
-                        except:
+                        except Exception:
                             pass
                     lbl.after(15, stream)
 
@@ -1214,7 +1214,7 @@ def show_preview(path):
                                         cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                                         try:
                                             pygame.mixer.music.play()
-                                        except:
+                                        except Exception:
                                             pass
                                         play_lbl.after(10, stream)
 
@@ -1229,18 +1229,18 @@ def show_preview(path):
                                 global cap
                                 try:
                                     cap.release()
-                                except:
+                                except Exception:
                                     pass
                                 try:
                                     pygame.mixer.music.stop()
                                     pygame.mixer.music.unload()
-                                except:
+                                except Exception:
                                     pass
                                 for f in [v_file, a_file]:
                                     try:
                                         if os.path.exists(f):
                                             os.remove(f)
-                                    except:
+                                    except Exception:
                                         pass
 
                             def handle_thread_error(err):
@@ -1305,7 +1305,7 @@ def show_preview(path):
             try:
                 dom = xml.dom.minidom.parseString(text)
                 text = dom.toprettyxml(indent="  ")
-            except:
+            except Exception:
                 pass
 
             txt = tk.Text(preview_frame, bg=CURRENT_BG, fg=fg, wrap="none")
@@ -1359,7 +1359,7 @@ def show_preview(path):
                 try:
                     obj = json.loads(text)
                     text = json.dumps(obj, indent=2)
-                except:
+                except Exception:
                     pass
 
             txt = tk.Text(preview_frame, bg=CURRENT_BG, fg=fg, wrap="word")
@@ -1367,7 +1367,7 @@ def show_preview(path):
             txt.configure(state="disabled")
             txt.pack(fill="both", expand=True, padx=10, pady=10)
             return
-        except:
+        except Exception:
             pass
 
     # --- Fallback ---
@@ -1906,7 +1906,7 @@ def refresh_files(search_query=None):
         if search_query:
             files = fuzzy_match(search_query.lower(), files)
 
-    except:
+    except Exception:
         tk.Label(left_frame, text="Invalid path", bg=CURRENT_BG, fg=fg).pack()
         return
 
@@ -2038,19 +2038,19 @@ def update_dashboard():
     # Memory
     try:
         mem = subprocess.check_output("free -h", shell=True).decode().splitlines()[1]
-    except:
+    except Exception:
         mem = "N/A"
 
     # Disk
     try:
         disk = subprocess.check_output("df -h /", shell=True).decode().splitlines()[1]
-    except:
+    except Exception:
         disk = "N/A"
 
     # IP
     try:
         ip = subprocess.check_output("hostname -I", shell=True).decode().strip()
-    except:
+    except Exception:
         ip = "N/A"
 
     # --- Styled Dashboard Layout ---
@@ -2765,7 +2765,7 @@ if os.path.exists(SEARCH_HISTORY_FILE):
                 if term:
                     search_history.append(term)
         search_history = search_history[-MAX_HISTORY:]
-    except:
+    except Exception:
         pass
 
 
@@ -2968,7 +2968,7 @@ def do_search(*args):
                         with open(SEARCH_HISTORY_FILE, "w") as f:
                             for term in search_history:
                                 f.write(term + "\n")
-                    except:
+                    except Exception:
                         pass
                 else:
                     del search_history[search_history.index(query)]
@@ -2979,7 +2979,7 @@ def do_search(*args):
                         with open(SEARCH_HISTORY_FILE, "w") as f:
                             for term in search_history:
                                 f.write(term + "\n")
-                    except:
+                    except Exception:
                         pass
 
                 # Execute
