@@ -55,12 +55,13 @@ class ToggleSwitch(tk.Canvas):
     
     def __init__(self, parent, width=60, height=30, bg_on="#4CAF50",\
                  bg_off="#888888",
-                 circle_color="#FFFFFF", command=None, initial=False):
+                 circle_color="#FFFFFF", command=None, initial=False, theme=True):
         
         super().__init__(parent, width=width, height=height, highlightthickness=0,
                          bg=CURRENT_BG)
 
         self.width = width
+        self.theme = theme
         self.height = int(height)
         self.bg_on = bg_on
         self.bg_off = bg_off
@@ -106,6 +107,9 @@ class ToggleSwitch(tk.Canvas):
         self.animate()
         if self.command:
             self.command(self.state)
+            
+        if self.theme:
+            self.after(500, os.execl(sys.executable, sys.executable, *sys.argv))
 
     def animate(self):
         target = self.width - self.radius if self.state else self.radius
@@ -185,7 +189,9 @@ def apply_theme():
     style.configure("TLabel",
                     background=CURRENT_BG,
                     foreground=fg)
-    root.update()
+    style.configure("TFrame",
+                    background=CURRENT_BG,
+                    foreground=fg)
 
 
 # -------------------------------
@@ -464,7 +470,8 @@ fuzzy_toggle = ToggleSwitch(
     bg_off="#555555",
     circle_color="#FFFFFF",
     initial=FUZZY_ENABLED,
-    command=toggle_fuzzy
+    command=toggle_fuzzy,
+    theme=False
 )
 fuzzy_toggle.pack(pady=10)
 
