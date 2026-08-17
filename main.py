@@ -36,6 +36,9 @@ from PIL import Image, ImageTk
 import shutil
 import psutil
 import pyperclip
+import xml.dom.minidom
+from tkinterweb import HtmlFrame
+import markdown2
 
 # Global path variables
 
@@ -712,6 +715,7 @@ def clear_preview():
         preview_frame.destroy()
         preview_frame = None
 
+
 def show_preview(path):
     global preview_frame
     # Clear old preview
@@ -752,8 +756,59 @@ def show_preview(path):
         except:
             pass
 
+    # --- HTML preview ---
+    if ext in [".html", ".htm", ".xhtml"]:
+        try:
+            # Renders HTML beautifully inside Tkinter
+            html_view = HtmlFrame(preview_frame)
+            html_view.load_file(path)
+            html_view.pack(fill="both", expand=True, padx=10, pady=10)
+            return
+        except Exception as e:
+            print(f"HTML Preview error: {e}")
+
+    # --- XML preview ---
+    if ext == ".xml":
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                text = f.read(5000) # Read chunk for speed
+            
+            # Format XML to be pretty with indentation
+            try:
+                dom = xml.dom.minidom.parseString(text)
+                text = dom.toprettyxml(indent="  ")
+            except:
+                pass # Fallback to raw text if XML is malformed
+                
+            txt = tk.Text(preview_frame, bg=CURRENT_BG, fg=fg, wrap="none") # No wrap for code
+            txt.insert("1.0", text)
+            txt.configure(state="disabled")
+            txt.pack(fill="both", expand=True, padx=10, pady=10)
+            return
+        except Exception as e:
+             print(f"XML Preview error: {e}")
+             
+    # -- Markdown Support ---
+    if ext == ".md":
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                md_content = f.read()
+
+            # Convert Markdown string to HTML string
+            html_output = markdown2.markdown(md_content)
+
+            # Render that HTML directly in your existing frame
+
+
+            html_view = HtmlFrame(preview_frame)
+            html_view.load_html(html_output)  # <-- Using load_html instead of load_file
+            html_view.pack(fill="both", expand=True, padx=10, pady=10)
+            return
+        except Exception as e:
+            print(f"Markdown Preview error: {e}")
+
     # --- Text preview ---
-    if ext in [".txt", ".md", ".json", ".py", ".sh", ".log", ".cfg", ".ini"]:
+    if ext in [".txt", ".md", ".json", ".py", ".sh", ".log", ".cfg", ".ini", ".css", ".js"]:
         try:
             with open(path, "r") as f:
                 text = f.read(2000)  # first 2k chars
