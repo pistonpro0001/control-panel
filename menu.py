@@ -30,6 +30,7 @@ import subprocess
 import os
 import threading
 import time
+import sys
 from datetime import datetime
 import json
 from PIL import Image, ImageTk
@@ -62,7 +63,7 @@ class ToggleSwitch(tk.Canvas):
                          bg=CURRENT_BG)
 
         self.width = width
-        self.height = height
+        self.height = int(height)
         self.bg_on = bg_on
         self.bg_off = bg_off
         self.circle_color = circle_color
@@ -284,8 +285,12 @@ ICON_PATH = HOME_DIR + "icons/"
 ICON_SIZE = (24, 24)
     
 def load_icon(name):
-    img = Image.open(ICON_PATH + name).resize(ICON_SIZE, Image.LANCZOS)
-    return ImageTk.PhotoImage(img)
+    try:
+        img = Image.open(ICON_PATH + name).resize(ICON_SIZE, Image.LANCZOS)
+        return ImageTk.PhotoImage(img)
+    except:
+        print("Something went wrong loading the icons. Check that they exist (in the icons/ folder).")
+        sys.exit(0)
 
 icons = { "folder": load_icon("folder.png"), "file": load_icon("file.png"), "script": load_icon("script.png"), "image": load_icon("image.png"), "exec": load_icon("exec.png"), "video": load_icon("video.png"), "audio": load_icon("audio.png") }
 
