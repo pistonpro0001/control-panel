@@ -21,6 +21,7 @@
 #      - Command Palette
 #      - Search Engine
 #      - Theme Engine
+#      - Fancy A** Code Banner
 # ============================================================
 
 import tkinter as tk
@@ -67,7 +68,7 @@ os.makedirs(PLUGIN_DIR, exist_ok=True)
 pygame.mixer.init()
 
 # -------------------------------
-#  Toggle Switch Widget
+#  Toggle Switch Thingy
 # -------------------------------
 
 
@@ -210,7 +211,7 @@ def save_theme(theme):
 
 
 if not os.path.exists(THEME_FILE):
-    save_theme("light")
+    save_theme("dark")
 
 
 def apply_theme():
@@ -222,13 +223,15 @@ def apply_theme():
         fg = "#FFFFFF"
         hover_bg = "#444444"
         hover_fg = "#FFFFFF"
-    else:
+    else:  # Who would ever want this? Might remove in near future.
         CURRENT_BG = "#FFFFFF"
         fg = "#000000"
         hover_bg = "#DDDDDD"
         hover_fg = "#000000"
 
     root.configure(bg=CURRENT_BG)
+
+    # All of the style configurations
 
     style.configure(
         "TButton", background=CURRENT_BG, foreground=fg, borderwidth=0
@@ -352,7 +355,7 @@ def run_script_with_popup(name, path):
 
 
 # -------------------------------
-#  GUI Setup
+#  GUI Setup (finally)
 # -------------------------------
 
 root = tk.Tk()
@@ -374,7 +377,7 @@ def load_icon(name):
         print(
             "Something went wrong loading the icons. Check that they ALL exist (in the icons/ folder)."
         )
-        sys.exit(0)
+        sys.exit(21)
 
 
 # Load the icons
@@ -392,6 +395,7 @@ style = ttk.Style()
 
 apply_theme()
 
+# Make the layout in the notebook style
 notebook = ttk.Notebook(root, style="CustomNotebook.TNotebook")
 notebook.pack(fill="both", expand=True)
 
@@ -482,6 +486,7 @@ def on_tab_change(event):
         do_search()
 
 
+# Thats a big binding name wow
 notebook.bind("<<NotebookTabChanged>>", on_tab_change)
 
 
