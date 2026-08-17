@@ -137,6 +137,7 @@ class PanelContext:
 #  Theme Handling
 # -------------------------------
 
+
 def load_theme():
     with open(THEME_FILE, "r") as f:
         return f.read().strip()
@@ -145,6 +146,8 @@ def save_theme(theme):
     with open(THEME_FILE, "w") as f:
         f.write(theme)
 
+if not os.path.exists(THEME_FILE):
+    save_theme("light")
 def apply_theme():
     global CURRENT_BG
     theme = load_theme()
@@ -287,10 +290,6 @@ def load_icon(name):
 icons = { "folder": load_icon("folder.png"), "file": load_icon("file.png"), "script": load_icon("script.png"), "image": load_icon("image.png"), "exec": load_icon("exec.png"), }
 
 style = ttk.Style()
-
-if not os.path.exists(THEME_FILE):
-    with open(THEME_FILE, "w") as f:
-        f.write("light")
 
 apply_theme()
 
