@@ -80,7 +80,7 @@ chmod +x install.sh
 # ▶️ How To Run
 
 ```bash
-python3 menu.py
+source .venv/bin/activate && python main.py
 ```
 
 ### ⚠️ First Run Note
