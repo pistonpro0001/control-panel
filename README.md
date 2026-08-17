@@ -1,7 +1,7 @@
 # Control Panel / FireCenter
 
-A all-in-one system control interface built entirely in Python 3.
-Designed to give you full control over your system in a fast, customizable, and extensible UI.
+An all-in-one system control interface built in Python 3.
+Designed to give you full control over your system in a not-so-fast, customizable, and extensible interface.
 
 ---
 
