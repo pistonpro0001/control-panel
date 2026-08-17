@@ -25,6 +25,9 @@
 
 import tkinter as tk
 from tkinter import ttk
+import cv2
+import pymupdf
+
 import subprocess
 import os
 import threading
@@ -39,6 +42,7 @@ import pyperclip
 import xml.dom.minidom
 from tkinterweb import HtmlFrame
 import markdown2
+import pygame
 
 # Global path variables
 
@@ -52,6 +56,8 @@ SEARCH_HISTORY_FILE = HOME_DIR + ".controlpanel_search_history"
 FAVORITES_FILE = HOME_DIR + ".controlpanel_favorites.json"
 CURRENT_BG = "#FFFFFF"
 os.makedirs(PLUGIN_DIR, exist_ok=True)
+
+pygame.mixer.init()
 
 # -------------------------------
 #  Toggle Switch Widget
@@ -720,7 +726,7 @@ def show_preview(path):
     global preview_frame
     # Clear old preview
     clear_preview()
-    
+
     preview_frame = tk.Frame(file_frame, bg=CURRENT_BG)
     preview_frame.pack(side="right", fill="both")
 
@@ -735,7 +741,7 @@ def show_preview(path):
         bd=0,
         highlightthickness=0,
         font=("TkDefaultFont", 12, "bold"),
-        command=lambda: clear_preview()
+        command=lambda: clear_preview(),
     )
     close_btn.pack(anchor="ne", padx=5, pady=5)
 
@@ -756,10 +762,141 @@ def show_preview(path):
         except:
             pass
 
+    # --- 1. NEW: SVG Preview (Zero dependencies! Handled by tkinterweb) ---
+    if ext == ".svg":
+        try:
+            html_view = HtmlFrame(preview_frame)
+            html_view.load_file(path)
+            html_view.pack(fill="both", expand=True, padx=10, pady=10)
+            return
+        except Exception as e:
+            print(f"SVG Preview error: {e}")
+
+    # --- 2. NEW: PDF Preview (PyMuPDF grabs page 1 and passes to PIL) ---
+    if ext == ".pdf":
+        try:
+            doc = pymupdf.open(path)
+            page = doc.load_page(0)  # Load the first page
+            pix = page.get_pixmap()
+
+            # Create standard PIL image from raw pixel samples
+            img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            img.thumbnail((280, 280))
+            tkimg = ImageTk.PhotoImage(img)
+
+            lbl = tk.Label(preview_frame, image=tkimg, bg=CURRENT_BG)
+            lbl.image = tkimg
+            lbl.pack(pady=10)
+
+            # Subtitle giving the user full page counts
+            page_lbl = tk.Label(
+                preview_frame,
+                text=f"PDF Preview - Page 1 of {len(doc)}",
+                bg=CURRENT_BG,
+                fg=fg,
+            )
+            page_lbl.pack(pady=5)
+            return
+        except Exception as e:
+            print(f"PDF Preview error: {e}")
+
+    # --- 3. NEW: Pure Audio Preview (Pygame Mixer) ---
+    audio_exts = [".mp3", ".wav", ".ogg"]
+    if ext in audio_exts:
+        try:
+            lbl = tk.Label(
+                preview_frame,
+                text="Playing Audio File...",
+                bg=CURRENT_BG,
+                fg=fg,
+                font=("TkDefaultFont", 12),
+            )
+            lbl.pack(pady=50)
+
+            pygame.mixer.music.load(path)
+            pygame.mixer.music.play()
+
+            # Hijack the close button to kill background music on panel collapse
+            def stop_audio():
+                pygame.mixer.music.stop()
+                clear_preview()
+
+            close_btn.configure(command=stop_audio)
+            return
+        except Exception as e:
+            print(f"Audio Preview error: {e}")
+
+    # --- Video Preview with Perfect Audio Sync ---
+    video_exts = [".mp4", ".avi", ".mov", ".ogv"]
+    if ext in video_exts:
+        try:
+            lbl = tk.Label(preview_frame, bg=CURRENT_BG)
+            lbl.pack(pady=10)
+
+            cap = cv2.VideoCapture(path)
+            fps = cap.get(cv2.CAP_PROP_FPS) # Get frames per second of the video
+            
+            audio_loaded = False
+            try:
+                pygame.mixer.music.load(path)
+                pygame.mixer.music.play()
+                audio_loaded = True
+            except pygame.error:
+                print("Pygame could not decode the audio track for this video format.")
+
+            def stream():
+                if not preview_frame.winfo_exists():
+                    cap.release()
+                    if audio_loaded:
+                        pygame.mixer.music.stop()
+                    return
+
+                # Calculate the exact frame target based on audio position
+                if audio_loaded:
+                    # Pygame returns time in milliseconds
+                    current_millis = pygame.mixer.music.get_pos()
+                    # Calculate target frame: (millis / 1000) * frames per second
+                    target_frame = int((current_millis / 1000.0) * fps)
+                    cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
+
+                ret, frame = cap.read()
+                if ret:
+                    cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    img = Image.fromarray(cv2image)
+                    img.thumbnail((280, 280))
+
+                    tkimg = ImageTk.PhotoImage(image=img)
+                    lbl.configure(image=tkimg)
+                    lbl.image = tkimg
+
+                    # Schedule the next check (runs fast to keep up with position)
+                    lbl.after(15, stream)
+                else:
+                    # Loop video and audio together at the end
+                    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                    if audio_loaded:
+                        try:
+                            pygame.mixer.music.play()
+                        except:
+                            pass
+                    lbl.after(15, stream)
+
+            def stop_video():
+                cap.release()
+                if audio_loaded:
+                    pygame.mixer.music.stop()
+                clear_preview()
+
+            close_btn.configure(command=stop_video)
+
+            stream()
+            return
+        except Exception as e:
+            print(f"Video Preview error: {e}")
+
     # --- HTML preview ---
     if ext in [".html", ".htm", ".xhtml"]:
         try:
-            # Renders HTML beautifully inside Tkinter
             html_view = HtmlFrame(preview_frame)
             html_view.load_file(path)
             html_view.pack(fill="both", expand=True, padx=10, pady=10)
@@ -771,49 +908,54 @@ def show_preview(path):
     if ext == ".xml":
         try:
             with open(path, "r", encoding="utf-8") as f:
-                text = f.read(5000) # Read chunk for speed
-            
-            # Format XML to be pretty with indentation
+                text = f.read(5000)
+
             try:
                 dom = xml.dom.minidom.parseString(text)
                 text = dom.toprettyxml(indent="  ")
             except:
-                pass # Fallback to raw text if XML is malformed
-                
-            txt = tk.Text(preview_frame, bg=CURRENT_BG, fg=fg, wrap="none") # No wrap for code
+                pass
+
+            txt = tk.Text(preview_frame, bg=CURRENT_BG, fg=fg, wrap="none")
             txt.insert("1.0", text)
             txt.configure(state="disabled")
             txt.pack(fill="both", expand=True, padx=10, pady=10)
             return
         except Exception as e:
-             print(f"XML Preview error: {e}")
-             
+            print(f"XML Preview error: {e}")
+
     # -- Markdown Support ---
     if ext == ".md":
         try:
             with open(path, "r", encoding="utf-8") as f:
                 md_content = f.read()
 
-            # Convert Markdown string to HTML string
             html_output = markdown2.markdown(md_content)
 
-            # Render that HTML directly in your existing frame
-
-
             html_view = HtmlFrame(preview_frame)
-            html_view.load_html(html_output)  # <-- Using load_html instead of load_file
+            html_view.load_html(html_output)
             html_view.pack(fill="both", expand=True, padx=10, pady=10)
             return
         except Exception as e:
             print(f"Markdown Preview error: {e}")
 
     # --- Text preview ---
-    if ext in [".txt", ".md", ".json", ".py", ".sh", ".log", ".cfg", ".ini", ".css", ".js"]:
+    if ext in [
+        ".txt",
+        ".md",
+        ".json",
+        ".py",
+        ".sh",
+        ".log",
+        ".cfg",
+        ".ini",
+        ".css",
+        ".js",
+    ]:
         try:
             with open(path, "r") as f:
-                text = f.read(2000)  # first 2k chars
+                text = f.read(2000)
 
-            # Pretty json
             if ext == ".json":
                 try:
                     obj = json.loads(text)
@@ -830,8 +972,9 @@ def show_preview(path):
             pass
 
     # --- Fallback ---
-    tk.Label(preview_frame, text="No preview available",
-             bg=CURRENT_BG, fg=fg).pack(pady=20)
+    tk.Label(
+        preview_frame, text="No preview available", bg=CURRENT_BG, fg=fg
+    ).pack(pady=20)
 
 # Renaming
 def rename_file(old_path):

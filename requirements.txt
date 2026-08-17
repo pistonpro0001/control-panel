@@ -3,3 +3,6 @@ psutil==7.2.2
 pyperclip==1.11.0
 tkinterweb==4.25.2
 markdown2==2.5.5
+pygame==2.6.1
+pymupdf==1.25.3
+opencv-python==4.11.0.86
