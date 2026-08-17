@@ -5,22 +5,22 @@ Designed to give you full control over your system in a not-so-fast, customizabl
 
 ---
 
-# ✨ Features
+# Features
 
-* 📊 Dashboard for system monitoring
-* ⚡ Quick system commands
-* 🔌 Plugin support
-* 🧠 Task manager
-* 📁 File manager
-* ⭐ Favorites system
-* ⏱️ Command scheduling
-* 📋 Visual clipboard
-* 🔎 System-wide fuzzy search
-* 🎨 Theme support
+* Dashboard for system monitoring
+* Quick system commands
+* Plugin support
+* Task manager
+* File manager
+* Favorites system
+* Command scheduling
+* Visual clipboard
+* System-wide fuzzy search
+* Theme support
 
 ---
 
-# 🖥️ Supported Systems
+# Supported Systems
 
 ## Operating Systems
 
@@ -46,7 +46,7 @@ Designed to give you full control over your system in a not-so-fast, customizabl
 
 ---
 
-# ⚙️ Setup
+# Setup
 
 ## 1. Install Python
 
@@ -77,7 +77,7 @@ chmod +x install.sh
 
 ---
 
-# ▶️ How To Run
+# How To Run
 
 ```bash
 source .venv/bin/activate && python main.py
@@ -91,7 +91,7 @@ If it appears to hang, wait a moment, stop it with `Ctrl+C`, and run it again.
 
 ---
 
-# 📁 Plugins
+# Plugins
 
 Plugins are stored in:
 
@@ -103,7 +103,7 @@ You can create or modify plugins to extend functionality.
 
 ---
 
-# 📝 Notes
+# Notes
 
 * Designed for Linux systems only
 * Some features depend on system tools (file manager, terminal, etc.)
@@ -111,7 +111,7 @@ You can create or modify plugins to extend functionality.
 
 ---
 
-# 🚀 Project Status
+# Project Status
 
 This is **v1** (not including extra updates).
 
@@ -123,15 +123,13 @@ The goal is to expand with:
 
 ---
 
-# 💬 Final Thoughts
-
 This project has been in development for about 6 months and is made to be explored, modified, and extended.
 
 If you build something cool or improve the experience, contributions are welcome.
 
 ---
 
-# 📸 Screenshots
+# Screenshots
 
 ![Dashboard](icons/screenshot1.png)
 ![File Explorer](icons/screenshot2.png)
