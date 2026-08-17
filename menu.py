@@ -1590,6 +1590,7 @@ def switch_tab(offset):
     new_index = (current + offset) % total
     notebook.select(new_index)
 
+# For that ease of use switching
 root.bind("<Control-Tab>", lambda e: switch_tab(1))
 root.bind("<Control-Shift-Tab>", lambda e: switch_tab(-1))
 
@@ -1656,7 +1657,7 @@ def add_button_to_tab(tab_name, label, callback):
 
         menu.tk_popup(event.x_root, event.y_root)
 
-    # Attach right-click menu ONLY for non-Favorites tabs
+    # Attach right-click menu only for non-Favorites tabs
     if tab_name != "Favorites":
         btn.bind("<Button-3>", show_fav_menu)
 
@@ -1879,7 +1880,7 @@ def highlight(text, query):
     if start == -1:
         return text
     end = start + len(query)
-    return text[:start] + "**" + text[start:end] + "**" + text[end:]
+    return text[:start] + "**" + text[start:end] + "**" + text[end:] # Listen this is not to try to markdonw the buttons the ** is intentional!
 
 
 # --- Logic ---
