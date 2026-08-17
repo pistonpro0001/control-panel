@@ -313,7 +313,7 @@ def load_icon(name):
         img = Image.open(ICON_PATH + name).resize(ICON_SIZE, Image.LANCZOS)
         return ImageTk.PhotoImage(img)
     except:
-        print("Something went wrong loading the icons. Check that they exist (in the icons/ folder).")
+        print("Something went wrong loading the icons. Check that they ALL exist (in the icons/ folder).")
         sys.exit(0)
 
 # Load the icons
