@@ -6,4 +6,4 @@ markdown2==2.5.5
 pygame==2.6.1
 pymupdf==1.25.3
 opencv-python==4.11.0.86
-yt-dlp
+yt-dlp==2026.04.14
