@@ -40,6 +40,7 @@ import pyperclip
 # Global path variables
 
 HOME_DIR = os.path.dirname(os.path.abspath(__file__)) + "/"
+BASE_DIR = os.path.expanduser("~")
 THEME_FILE = HOME_DIR + ".controlpanel_theme"
 PLUGIN_DIR = HOME_DIR + ".controlpanel_plugins"
 SEARCH_HISTORY_FILE = HOME_DIR + ".controlpanel_search_history"
@@ -695,7 +696,7 @@ file_frame.pack(fill="both", expand=True)
 left_frame = tk.Frame(file_frame, bg=CURRENT_BG)
 left_frame.pack(side="left", fill="both", expand=True)
 
-path_var = tk.StringVar(value=os.path.expanduser("~"))
+path_var = tk.StringVar(value=BASE_DIR)
 
 show_hidden = tk.BooleanVar(value=False)
 
@@ -1492,7 +1493,7 @@ def register_builtin_commands():
         "Open Home Folder",
         "Files",
         "Jump to your home directory",
-        lambda: (path_var.set(os.path.expanduser("~")), refresh_files(), notebook.select(tabs["Files"]))
+        lambda: (path_var.set(BASE_DIR), refresh_files(), notebook.select(tabs["Files"]))
     )
 
     register_command(
