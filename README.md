@@ -42,7 +42,10 @@ Designed to give you full control over your system in a not-so-fast, customizabl
   * LXDE
   * MATE
   * GNOME
+  * Plasma (~6.7 and earlier, since 6.8 deprecates X11)
   * KDE
+
+  etc.
 
 ---
 
@@ -126,11 +129,11 @@ The goal is to improve with:
 
 * Better performance
 * Improved UI/UX
-* Cross-environment compatibility (hopefully with windows someday)
+* Cross-environment compatibility (hopefully with Windows someday)
 
 ---
 
-This project has been in development for about 6 months and should be modified and extended.
+This project has been in development for about 8 months and should be modified and extended.
 
 If you build some cool plugin and want it to be included, or you have ideas to improve the experience, contributions are welcome.
 
@@ -139,4 +142,5 @@ If you build some cool plugin and want it to be included, or you have ideas to i
 # Screenshots
 
 ![Dashboard](icons/screenshot1.png)
+
 ![File Explorer](icons/screenshot2.png)
